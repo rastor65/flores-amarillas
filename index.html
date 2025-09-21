@@ -3,133 +3,71 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Flor Amarilla • Galaxia Viva</title>
-  <meta name="description" content="Un detalle romántico: una flor amarilla elegante en una galaxia viva.">
-  <meta property="og:title" content="Flor Amarilla • Galaxia Viva">
-  <meta property="og:description" content="Un detalle romántico animado y elegante.">
-  <meta property="og:type" content="website">
+  <title>Flor Amarilla en la Galaxia</title>
+  <meta name="description" content="Un detalle romántico: una flor amarilla elegante sobre una galaxia.">
+  <meta property="og:title" content="Flor para ti" />
+  <meta property="og:description" content="Un detalle romántico en la galaxia." />
+  <meta property="og:type" content="website" />
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
-  <!-- CAPAS DEL ESPACIO: nebulosas rotatorias + estrellas con deriva + twinkle -->
+  <!-- Fondo galaxia con capas -->
   <div class="space" aria-hidden="true">
-    <div class="nebula nebula-a"></div>
-    <div class="nebula nebula-b"></div>
-    <div class="nebula nebula-c"></div>
-
-    <div class="stars stars-near"></div>
-    <div class="stars stars-far"></div>
-
-    <!-- Estrellas fugaces generadas por JS se insertan aquí -->
-    <div id="meteors"></div>
+    <div class="stars layer-1"></div>
+    <div class="stars layer-2"></div>
+    <div class="nebula"></div>
   </div>
 
   <main>
+    <!-- Botón accesible alterno para mostrar/ocultar el mensaje -->
     <button id="toggleMessage" class="ghost-btn" type="button" aria-controls="loveMessage" aria-expanded="false">
       Mostrar mensaje
     </button>
 
-    <!-- FLOR SVG DE ALTA CALIDAD -->
-    <figure class="flower" aria-label="Flor amarilla elegante" role="img" tabindex="0">
-      <svg class="flower-svg" viewBox="0 0 360 520" width="360" height="520" aria-hidden="true">
-        <defs>
-          <!-- Gradientes para pétalos -->
-          <radialGradient id="petalGrad1" cx="50%" cy="40%" r="70%">
-            <stop offset="0%"  stop-color="#FFE589"/>
-            <stop offset="55%" stop-color="#F8CF4E"/>
-            <stop offset="100%" stop-color="#E9B93A"/>
-          </radialGradient>
-          <linearGradient id="petalEdge" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="rgba(255,255,255,0.65)"/>
-            <stop offset="40%" stop-color="rgba(255,255,255,0.15)"/>
-            <stop offset="100%" stop-color="rgba(0,0,0,0.05)"/>
-          </linearGradient>
+    <!-- Contenedor de la flor (SVG) -->
+    <figure class="flower" aria-label="Una sola flor amarilla elegante" role="img" tabindex="0">
+      <!-- SVG con capas: pétalos, centro, hojas, tallo -->
+      <svg class="flower-svg" viewBox="0 0 300 420" width="300" height="420" aria-hidden="true">
+        <!-- Sombra suave bajo la flor -->
+        <ellipse cx="150" cy="400" rx="60" ry="10" class="shadow"></ellipse>
 
-          <!-- Centro -->
-          <radialGradient id="centerGrad" cx="50%" cy="50%" r="60%">
-            <stop offset="0%"  stop-color="#FFD76A"/>
-            <stop offset="55%" stop-color="#DAA520"/>
-            <stop offset="100%" stop-color="#A87600"/>
-          </radialGradient>
+        <!-- Tallo -->
+        <path class="stem" d="M150 250 C148 300, 152 340, 150 380" />
 
-          <!-- Halo dorado del centro -->
-          <radialGradient id="haloGrad" cx="50%" cy="50%" r="100%">
-            <stop offset="0%"   stop-color="rgba(255,214,120,0.55)"/>
-            <stop offset="60%"  stop-color="rgba(255,214,120,0.18)"/>
-            <stop offset="100%" stop-color="rgba(255,214,120,0)"/>
-          </radialGradient>
+        <!-- Hojas -->
+        <path class="leaf left"
+          d="M145 300 C110 290, 90 270, 100 250 C115 235, 135 245, 145 265 Z" />
+        <path class="leaf right"
+          d="M155 320 C195 310, 215 290, 205 270 C190 255, 170 265, 155 285 Z" />
 
-          <!-- Textura de semillas -->
-          <pattern id="seeds" patternUnits="userSpaceOnUse" width="6" height="6">
-            <circle cx="2" cy="2" r="0.7" fill="rgba(255,240,200,0.6)"/>
-            <circle cx="4" cy="4" r="0.6" fill="rgba(210,150,60,0.35)"/>
-          </pattern>
-
-          <!-- Sombra suave -->
-          <filter id="softShadow" x="-50%" y="-50%" width="200%" height="200%">
-            <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="rgba(0,0,0,0.35)"/>
-          </filter>
-        </defs>
-
-        <!-- Sombra bajo la flor -->
-        <ellipse cx="180" cy="495" rx="70" ry="14" fill="rgba(0,0,0,.35)" filter="url(#softShadow)"></ellipse>
-
-        <!-- Tallo curvo -->
-        <path class="stem" d="M180 300 C176 360, 184 420, 180 480" />
-
-        <!-- Hojas con leves venas -->
-        <g class="leaves">
-          <path class="leaf left"  d="M175 360 C130 345, 110 320, 122 300 C138 278, 160 288, 175 315 Z"/>
-          <path class="leaf right" d="M185 385 C235 370, 255 345, 243 325 C227 305, 205 315, 185 340 Z"/>
-          <!-- venas -->
-          <path class="vein left"  d="M162 332 C150 324, 138 318, 128 316" />
-          <path class="vein right" d="M198 356 C212 348, 226 342, 236 340" />
-        </g>
-
-        <!-- Halo del centro -->
-        <circle cx="180" cy="230" r="42" fill="url(#haloGrad)" class="center-halo"/>
-
-        <!-- Pétalos exteriores (corona trasera, 10 pétalos) -->
+        <!-- Pétalos (anillo inferior) -->
         <g class="petals back">
-          <!-- Se dibujan con ligera variación angular -->
-          <g transform="rotate(-6 180 230)"><path d="M180 230 C150 170, 140 145, 172 138 C204 132, 214 162, 205 198 Z"/></g>
-          <g transform="rotate(18 180 230)"><path d="M180 230 C145 190, 126 175, 130 155 C139 135, 164 136, 180 166 Z"/></g>
-          <g transform="rotate(42 180 230)"><path d="M180 230 C138 218, 120 212, 122 192 C126 170, 150 168, 170 186 Z"/></g>
-          <g transform="rotate(66 180 230)"><path d="M180 230 C150 240, 132 245, 132 225 C134 202, 158 198, 174 210 Z"/></g>
-          <g transform="rotate(90 180 230)"><path d="M180 230 C180 260, 178 276, 160 274 C140 270, 144 246, 162 234 Z"/></g>
-          <g transform="rotate(114 180 230)"><path d="M180 230 C210 240, 228 245, 228 225 C226 202, 202 198, 186 210 Z"/></g>
-          <g transform="rotate(138 180 230)"><path d="M180 230 C222 218, 240 212, 238 192 C234 170, 210 168, 190 186 Z"/></g>
-          <g transform="rotate(162 180 230)"><path d="M180 230 C215 190, 234 175, 230 155 C221 135, 196 136, 180 166 Z"/></g>
-          <g transform="rotate(186 180 230)"><path d="M180 230 C210 170, 220 145, 188 138 C156 132, 146 162, 155 198 Z"/></g>
-          <g transform="rotate(210 180 230)"><path d="M180 230 C160 170, 150 145, 168 138 C188 132, 196 162, 192 198 Z"/></g>
+          <path d="M150 210 C130 170, 120 150, 145 140 C170 135, 180 165, 170 195 Z" />
+          <path d="M150 210 C110 190, 90 180, 95 160 C105 140, 130 140, 150 165 Z" />
+          <path d="M150 210 C100 210, 80 215, 85 195 C95 170, 120 165, 145 180 Z" />
+          <path d="M150 210 C200 170, 210 150, 185 140 C160 135, 150 165, 160 195 Z" />
+          <path d="M150 210 C190 190, 210 180, 205 160 C195 140, 170 140, 150 165 Z" />
+          <path d="M150 210 C200 210, 220 215, 215 195 C205 170, 180 165, 155 180 Z" />
         </g>
 
-        <!-- Pétalos interiores (corona delantera, 12 pétalos) -->
+        <!-- Pétalos (anillo superior) -->
         <g class="petals front">
-          <!-- pétalos más cortos y redondeados -->
-          <g transform="rotate(0 180 230)"><path d="M180 226 C158 202, 158 186, 176 184 C194 184, 197 200, 190 216 Z"/></g>
-          <g transform="rotate(30 180 230)"><path d="M180 226 C166 210, 164 198, 176 196 C188 196, 191 206, 186 218 Z"/></g>
-          <g transform="rotate(60 180 230)"><path d="M180 226 C173 214, 172 206, 179 204 C186 204, 188 211, 185 219 Z"/></g>
-          <g transform="rotate(90 180 230)"><path d="M180 226 C180 212, 182 204, 188 204 C194 204, 196 212, 192 220 Z"/></g>
-          <g transform="rotate(120 180 230)"><path d="M180 226 C187 214, 188 206, 181 204 C174 204, 172 211, 175 219 Z"/></g>
-          <g transform="rotate(150 180 230)"><path d="M180 226 C194 210, 196 198, 184 196 C172 196, 169 206, 174 218 Z"/></g>
-          <g transform="rotate(180 180 230)"><path d="M180 226 C202 202, 202 186, 184 184 C166 184, 163 200, 170 216 Z"/></g>
-          <g transform="rotate(210 180 230)"><path d="M180 226 C194 210, 196 198, 184 196 C172 196, 169 206, 174 218 Z"/></g>
-          <g transform="rotate(240 180 230)"><path d="M180 226 C187 214, 188 206, 181 204 C174 204, 172 211, 175 219 Z"/></g>
-          <g transform="rotate(270 180 230)"><path d="M180 226 C180 212, 182 204, 188 204 C194 204, 196 212, 192 220 Z"/></g>
-          <g transform="rotate(300 180 230)"><path d="M180 226 C173 214, 172 206, 179 204 C186 204, 188 211, 185 219 Z"/></g>
-          <g transform="rotate(330 180 230)"><path d="M180 226 C166 210, 164 198, 176 196 C188 196, 191 206, 186 218 Z"/></g>
+          <path d="M150 205 C128 178, 125 160, 145 155 C165 153, 172 173, 165 192 Z" />
+          <path d="M150 205 C120 195, 110 185, 113 170 C118 156, 135 158, 148 175 Z" />
+          <path d="M150 205 C135 205, 122 203, 123 188 C126 175, 140 176, 150 188 Z" />
+          <path d="M150 205 C172 178, 175 160, 155 155 C135 153, 128 173, 135 192 Z" />
+          <path d="M150 205 C180 195, 190 185, 187 170 C182 156, 165 158, 152 175 Z" />
+          <path d="M150 205 C165 205, 178 203, 177 188 C174 175, 160 176, 150 188 Z" />
         </g>
 
-        <!-- Centro con textura -->
-        <circle class="center" cx="180" cy="230" r="22" fill="url(#centerGrad)"/>
-        <circle class="center-seeds" cx="180" cy="230" r="18" fill="url(#seeds)"/>
+        <!-- Centro (disco + halo) -->
+        <circle class="center" cx="150" cy="205" r="18" />
+        <circle class="center-glow" cx="150" cy="205" r="28" />
       </svg>
-      <figcaption class="visually-hidden">
-        Flor amarilla realista, elegante, sobre un fondo de galaxia animada con estrellas.
-      </figcaption>
+      <figcaption class="visually-hidden">Flor amarilla sobre un cielo de galaxia con estrellas.</figcaption>
     </figure>
 
+    <!-- Mensaje romántico -->
     <section id="loveMessage" class="message" hidden>
       <p id="typewriter"></p>
     </section>
