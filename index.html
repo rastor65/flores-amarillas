@@ -3,243 +3,76 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Flores Galácticas — Jardín orbital</title>
-  <meta name="description" content="Detalle romántico: flores amarillas orbitando en una galaxia interactiva. HTML, CSS y JS puros, listo para GitHub Pages." />
-  <style>
-    :root{
-      --space-1: #050510;
-      --space-2: #0b0e2a;
-      --nebula-1: rgba(88, 61, 149, .55);
-      --nebula-2: rgba(232, 161, 255, .20);
-      --nebula-3: rgba(255, 205, 56, .16);
-
-      /* Paleta floral */
-      --petal-light: #ffef66;  /* brillo */
-      --petal-mid:   #f7c638;  /* cuerpo */
-      --petal-dark:  #e08a00;  /* sombra borde */
-      --petal-line:  rgba(192,105,0,.55);
-      --center-light:#fff8e1;
-      --center-mid:  #ffd76a;
-      --center-dark: #cf8f1a;
-      --sepal:       #2f7d32;
-
-      --text:   #f7f3ff;
-      --muted:  #c6c3d6;
-      --panel:  rgba(255,255,255,.06);
-      --panel-brd: rgba(255,255,255,.16);
-      --glow:   0 0 24px rgba(255,220,96,.35), 0 0 64px rgba(180,140,255,.15);
-    }
-
-    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Arial;color:var(--text);background:radial-gradient(1200px 800px at 50% 50%,var(--space-2),var(--space-1));overflow:hidden}
-    header{text-align:center;padding:20px 16px;z-index:3;position:relative}
-    .title{margin:0;font-size:clamp(28px,3.6vw,46px);text-shadow:var(--glow)}
-    .subtitle{margin:6px 0 0;color:var(--muted)}
-
-    .panel{z-index:3;position:relative;max-width:1100px;margin:12px auto;padding:12px;border-radius:16px;background:var(--panel);border:1px solid var(--panel-brd);backdrop-filter:blur(6px);display:flex;gap:12px;flex-wrap:wrap;justify-content:center;align-items:end}
-    .panel label{font-size:12px;color:var(--muted)}
-    .panel input,.panel select{border:1px solid var(--panel-brd);border-radius:12px;padding:10px;background:rgba(255,255,255,.08);color:var(--text)}
-    .panel button{cursor:pointer;border:1px solid var(--panel-brd);background:rgba(255,255,255,.08);color:var(--text);padding:10px 14px;border-radius:999px;font-weight:600}
-
-    .scene{position:relative;height:calc(100% - 150px)}
-    .stars{position:absolute;inset:0;z-index:0}
-    .nebula{position:absolute;inset:-20%;background:radial-gradient(800px 600px at 30% 60%,var(--nebula-1),transparent 60%),radial-gradient(600px 500px at 70% 40%,var(--nebula-2),transparent 60%),radial-gradient(900px 700px at 50% 70%,var(--nebula-3),transparent 70%);filter:blur(2px);opacity:.75;animation:spin 120s linear infinite}
-    @keyframes spin{to{transform:rotate(360deg)}}
-    .core{position:absolute;top:50%;left:50%;width:18vmin;height:18vmin;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle at 50% 45%,#fff6d6 0%,#ffe79a 40%,rgba(255,214,97,0) 70%);box-shadow:0 0 120px rgba(255,214,97,.35)}
-
-    .orbits{position:absolute;inset:0;z-index:2;perspective:900px}
-    .orbits-inner{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotateX(16deg) rotateZ(-10deg)}
-    .orbit{position:absolute;top:50%;left:50%;transform-style:preserve-3d}
-    .orbit::before{content:"";position:absolute;top:50%;left:50%;translate:-50% -50%;width:var(--d);height:var(--d);border:1px dashed rgba(255,255,255,.12);border-radius:50%}
-    @keyframes spin-cw{to{transform:rotate(360deg)}}
-    @keyframes spin-ccw{to{transform:rotate(-360deg)}}
-
-    /* ======== Flor realista ======== */
-    .flower{position:absolute;width:var(--size,100px);height:var(--size,100px);cursor:pointer;filter: drop-shadow(0 2px 6px rgba(0,0,0,.35))}
-    .flower svg{width:100%;height:100%;display:block}
-
-    /* Estado inicial: capullo (pétalos cerrados) */
-    .flower .petal{transform-box:fill-box;transform-origin:50% 65%;opacity:.0;transform:scale(.15) rotate(var(--rot,0deg));transition:transform .6s cubic-bezier(.2,.8,.2,1), opacity .5s ease;transition-delay:var(--delay,0s)}
-    .flower .inner{filter:brightness(1.05)}
-    .flower .sepal{transform-origin:50% 70%;transform:scale(.2);opacity:.0;transition:transform .5s ease, opacity .4s ease}
-    .flower .center, .flower .seeds{transform:scale(.6);opacity:.0;transition:transform .45s ease, opacity .4s ease .05s}
-
-    /* Flor "abierta" */
-    .flower.bloom .petal{opacity:1;transform:scale(1) rotate(var(--rot,0deg))}
-    .flower.bloom .sepal{opacity:.9;transform:scale(1)}
-    .flower.bloom .center, .flower.bloom .seeds{opacity:1;transform:scale(1)}
-
-    .flower:hover{filter: drop-shadow(0 0 10px rgba(255,235,120,.45)) drop-shadow(0 0 30px rgba(255,235,120,.15))}
-
-    footer{position:absolute;bottom:10px;width:100%;text-align:center;color:var(--muted)}
-  </style>
+  <title>Flor Amarilla en la Galaxia</title>
+  <meta name="description" content="Un detalle romántico: una flor amarilla elegante sobre una galaxia.">
+  <meta property="og:title" content="Flor para ti" />
+  <meta property="og:description" content="Un detalle romántico en la galaxia." />
+  <meta property="og:type" content="website" />
+  <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
-<header>
-  <h1 class="title">Flores galácticas para <span id="destinataria">mi amor</span></h1>
-  <p class="subtitle">Flores amarillas orbitando en una galaxia. Haz clic en una flor para verla florecer.</p>
-</header>
-<section class="panel">
-  <div>
-    <label for="nombre">Dedicatoria</label>
-    <input id="nombre" type="text" placeholder="Ej.: Sofía" />
+  <!-- Fondo galaxia con capas -->
+  <div class="space" aria-hidden="true">
+    <div class="stars layer-1"></div>
+    <div class="stars layer-2"></div>
+    <div class="nebula"></div>
   </div>
-  <div>
-    <label for="orbitsCount">Número de órbitas</label>
-    <select id="orbitsCount"><option value="2">2</option><option value="3" selected>3</option><option value="4">4</option><option value="5">5</option></select>
-  </div>
-  <div>
-    <label for="perOrbit">Flores por órbita</label>
-    <select id="perOrbit"><option value="6">6</option><option value="8" selected>8</option><option value="12">12</option><option value="16">16</option></select>
-  </div>
-  <button id="regen">Regenerar</button>
-  <button id="bloomAll">Florecer todas</button>
-</section>
-<main class="scene" id="scene">
-  <div class="stars" id="stars"><div class="layer" data-depth="0.3"></div><div class="layer" data-depth="0.6"></div><div class="layer" data-depth="1.0"></div></div>
-  <div class="nebula"></div>
-  <div class="core"></div>
-  <div class="orbits"><div class="orbits-inner" id="orbitsRoot"></div></div>
-</main>
-<footer><small>HTML, CSS y JavaScript puros — listo para GitHub Pages.</small></footer>
-<script>
-(function(){
-  const destinataria=document.getElementById('destinataria');
-  const nombre=document.getElementById('nombre');
-  const stars=document.getElementById('stars');
-  const orbitsRoot=document.getElementById('orbitsRoot');
-  const selectOrbits=document.getElementById('orbitsCount');
-  const selectPer=document.getElementById('perOrbit');
-  const btnRegen=document.getElementById('regen');
-  const btnBloomAll=document.getElementById('bloomAll');
-  const scene=document.getElementById('scene');
 
-  function makeStarLayer(layer,n){layer.innerHTML='';for(let i=0;i<n;i++){const s=document.createElement('div');s.style.position='absolute';const size=Math.random()*1.5+0.5;s.style.width=size+'px';s.style.height=size+'px';s.style.borderRadius='50%';s.style.background='white';s.style.left=Math.random()*100+'%';s.style.top=Math.random()*100+'%';s.style.opacity=(0.4+Math.random()*0.6).toFixed(2);layer.appendChild(s);}}
-  function buildStars(){stars.querySelectorAll('.layer').forEach((layer,idx)=>makeStarLayer(layer,120+idx*70));}
+  <main>
+    <!-- Botón accesible alterno para mostrar/ocultar el mensaje -->
+    <button id="toggleMessage" class="ghost-btn" type="button" aria-controls="loveMessage" aria-expanded="false">
+      Mostrar mensaje
+    </button>
 
-  // Parallax para estrellas y inclinación de órbitas
-  scene.addEventListener('pointermove',e=>{const rect=scene.getBoundingClientRect();const cx=rect.width/2,cy=rect.height/2;const dx=(e.clientX-rect.left-cx)/cx;const dy=(e.clientY-rect.top-cy)/cy;stars.querySelectorAll('.layer').forEach(layer=>{const d=parseFloat(layer.dataset.depth||1);layer.style.transform=`translate(${dx*d*-10}px,${dy*d*-10}px)`});orbitsRoot.style.transform=`translate(-50%,-50%) rotateX(${16+dy*6}deg) rotateZ(${-10+dx*6}deg)`});
+    <!-- Contenedor de la flor (SVG) -->
+    <figure class="flower" aria-label="Una sola flor amarilla elegante" role="img" tabindex="0">
+      <!-- SVG con capas: pétalos, centro, hojas, tallo -->
+      <svg class="flower-svg" viewBox="0 0 300 420" width="300" height="420" aria-hidden="true">
+        <!-- Sombra suave bajo la flor -->
+        <ellipse cx="150" cy="400" rx="60" ry="10" class="shadow"></ellipse>
 
-  let gid=0;
-  // Petalo realista (forma corazón/almendra con bezier) — reutilizable
-  function petalPath(){
-    return 'M50 62 C 44 48, 44 28, 50 16 C 56 28, 56 48, 50 62 Z';
-  }
+        <!-- Tallo -->
+        <path class="stem" d="M150 250 C148 300, 152 340, 150 380" />
 
-  function flowerSVG(id){
-    const outerCount=10; // pétalos externos
-    const innerCount=6;  // pétalos internos
+        <!-- Hojas -->
+        <path class="leaf left"
+          d="M145 300 C110 290, 90 270, 100 250 C115 235, 135 245, 145 265 Z" />
+        <path class="leaf right"
+          d="M155 320 C195 310, 215 290, 205 270 C190 255, 170 265, 155 285 Z" />
 
-    // Pétalos externos con sombreado
-    const petalsOuter=Array.from({length:outerCount}).map((_,i)=>{
-      const rot=(360/outerCount)*i;
-      const delay=(i*0.03).toFixed(2)+'s';
-      return `<path class="petal outer" d="${petalPath()}" style="--rot:${rot}deg; --delay:${delay}" fill="url(#p${id})" stroke="var(--petal-line)" stroke-width=".6" transform="rotate(${rot} 50 60)"/>`;
-    }).join('');
+        <!-- Pétalos (anillo inferior) -->
+        <g class="petals back">
+          <path d="M150 210 C130 170, 120 150, 145 140 C170 135, 180 165, 170 195 Z" />
+          <path d="M150 210 C110 190, 90 180, 95 160 C105 140, 130 140, 150 165 Z" />
+          <path d="M150 210 C100 210, 80 215, 85 195 C95 170, 120 165, 145 180 Z" />
+          <path d="M150 210 C200 170, 210 150, 185 140 C160 135, 150 165, 160 195 Z" />
+          <path d="M150 210 C190 190, 210 180, 205 160 C195 140, 170 140, 150 165 Z" />
+          <path d="M150 210 C200 210, 220 215, 215 195 C205 170, 180 165, 155 180 Z" />
+        </g>
 
-    // Pétalos internos un poco más pequeños y luminosos
-    const petalsInner=Array.from({length:innerCount}).map((_,i)=>{
-      const rot=(360/innerCount)*i + 15;
-      const delay=(0.25 + i*0.035).toFixed(2)+'s';
-      return `<path class="petal inner" d="${petalPath()}" style="--rot:${rot}deg; --delay:${delay}" fill="url(#pInner${id})" stroke="var(--petal-line)" stroke-width=".5" transform="translate(0,2) scale(.85) rotate(${rot} 50 60)"/>`;
-    }).join('');
+        <!-- Pétalos (anillo superior) -->
+        <g class="petals front">
+          <path d="M150 205 C128 178, 125 160, 145 155 C165 153, 172 173, 165 192 Z" />
+          <path d="M150 205 C120 195, 110 185, 113 170 C118 156, 135 158, 148 175 Z" />
+          <path d="M150 205 C135 205, 122 203, 123 188 C126 175, 140 176, 150 188 Z" />
+          <path d="M150 205 C172 178, 175 160, 155 155 C135 153, 128 173, 135 192 Z" />
+          <path d="M150 205 C180 195, 190 185, 187 170 C182 156, 165 158, 152 175 Z" />
+          <path d="M150 205 C165 205, 178 203, 177 188 C174 175, 160 176, 150 188 Z" />
+        </g>
 
-    // Sépalos verdes de base
-    const sepals=Array.from({length:5}).map((_,i)=>{
-      const rot=i*72+10;
-      return `<path class="sepal" d="M50 66 C46 62,44 56,50 50 C56 56,54 62,50 66 Z" fill="${getComputedStyle(document.documentElement).getPropertyValue('--sepal')||'#2f7d32'}" opacity=".95" transform="rotate(${rot} 50 60) translate(0,6) scale(1.05)"/>`;
-    }).join('');
+        <!-- Centro (disco + halo) -->
+        <circle class="center" cx="150" cy="205" r="18" />
+        <circle class="center-glow" cx="150" cy="205" r="28" />
+      </svg>
+      <figcaption class="visually-hidden">Flor amarilla sobre un cielo de galaxia con estrellas.</figcaption>
+    </figure>
 
-    // Centro con semillas (círculos pequeños)
-    const seeds=Array.from({length:14}).map((_,i)=>{
-      const ang=(Math.PI*2/14)*i; const r=6.2; const x=50+Math.cos(ang)*r; const y=60+Math.sin(ang)*r; const o=(0.55+Math.random()*0.35).toFixed(2);
-      return `<circle class="seeds" cx="${x.toFixed(2)}" cy="${y.toFixed(2)}" r=".9" fill="#8c5a12" opacity="${o}"/>`;
-    }).join('');
+    <!-- Mensaje romántico -->
+    <section id="loveMessage" class="message" hidden>
+      <p id="typewriter"></p>
+    </section>
+  </main>
 
-    return `<svg viewBox="0 0 100 100" aria-hidden="true">
-      <defs>
-        <radialGradient id="p${id}" cx="50%" cy="30%" r="70%">
-          <stop offset="0%"  stop-color="var(--petal-light)"/>
-          <stop offset="45%" stop-color="var(--petal-mid)"/>
-          <stop offset="100%" stop-color="var(--petal-dark)"/>
-        </radialGradient>
-        <radialGradient id="pInner${id}" cx="50%" cy="30%" r="70%">
-          <stop offset="0%"  stop-color="#fff9a6"/>
-          <stop offset="55%" stop-color="var(--petal-light)"/>
-          <stop offset="100%" stop-color="var(--petal-mid)"/>
-        </radialGradient>
-        <radialGradient id="c${id}" cx="50%" cy="50%" r="60%">
-          <stop offset="0%"  stop-color="var(--center-light)"/>
-          <stop offset="70%" stop-color="var(--center-mid)"/>
-          <stop offset="100%" stop-color="var(--center-dark)"/>
-        </radialGradient>
-      </defs>
-      ${sepals}
-      ${petalsOuter}
-      ${petalsInner}
-      <circle class="center" cx="50" cy="60" r="9.8" fill="url(#c${id})" stroke="#c7891a" stroke-width=".4" />
-      ${seeds}
-    </svg>`;
-  }
-
-  function createFlower(size=100){
-    const wrap=document.createElement('div');
-    wrap.className='flower';
-    wrap.style.setProperty('--size',size+'px');
-    const id=++gid;
-    wrap.innerHTML=flowerSVG(id);
-    const toggle=()=>wrap.classList.toggle('bloom');
-    wrap.addEventListener('click',toggle);
-    wrap.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();}});
-    return wrap;
-  }
-
-  function createOrbit(diameter,speedSec,reverse){
-    const o=document.createElement('div');
-    o.className='orbit';
-    o.style.setProperty('--d',diameter+'px');
-    o.style.width=o.style.height=diameter+'px';
-    o.style.marginLeft=o.style.marginTop=(-diameter/2)+'px';
-    o.style.animation=`${reverse?'spin-ccw':'spin-cw'} ${speedSec}s linear infinite`;
-    return o;
-  }
-
-  function populateOrbit(o,count){
-    const radius=parseFloat(getComputedStyle(o).getPropertyValue('--d'))/2;
-    for(let i=0;i<count;i++){
-      const angle=(360/count)*i;
-      const f=createFlower( Math.max(72, Math.min(112, radius/3 + Math.random()*24)) );
-      // Orientación para que miren al centro mientras orbitan
-      f.style.transform=`rotate(${angle}deg) translate(${radius}px) rotate(${-angle}deg)`;
-      o.appendChild(f);
-      // Pequeño retraso para que vayan abriendo en cascada al crear
-      requestAnimationFrame(()=> setTimeout(()=> f.classList.add('bloom'), 120 + i*40));
-    }
-  }
-
-  function buildOrbits(nOrbits,perOrbit){
-    orbitsRoot.innerHTML='';
-    const base=Math.min(scene.clientWidth,scene.clientHeight)*0.75;
-    const step=base/(nOrbits+1);
-    for(let i=1;i<=nOrbits;i++){
-      const d=step*i;
-      const speed=26+i*6+Math.random()*6;
-      const reverse=i%2===0;
-      const o=createOrbit(d,speed,reverse);
-      orbitsRoot.appendChild(o);
-      populateOrbit(o,perOrbit);
-    }
-  }
-
-  nombre.addEventListener('input',()=>{destinataria.textContent=nombre.value.trim()||'mi amor'});
-  document.getElementById('regen').addEventListener('click',()=>{buildOrbits(parseInt(selectOrbits.value,10),parseInt(selectPer.value,10))});
-  btnBloomAll.addEventListener('click',()=>{document.querySelectorAll('.flower').forEach(f=>f.classList.add('bloom'))});
-
-  // Recalcular en resize
-  let t; window.addEventListener('resize',()=>{clearTimeout(t); t=setTimeout(()=>buildOrbits(parseInt(selectOrbits.value,10),parseInt(selectPer.value,10)),200)});
-
-  buildStars();
-  buildOrbits(parseInt(selectOrbits.value,10),parseInt(selectPer.value,10));
-})();
-</script>
+  <script src="js/main.js"></script>
 </body>
 </html>
