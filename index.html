@@ -102,11 +102,26 @@
     @keyframes spin-ccw{ from{ transform: rotate(0deg)} to{ transform: rotate(-360deg)} }
 
     /* Flor */
-    .flower{ position:absolute; width:var(--size, 100px); height:var(--size, 100px); transform-origin:center; will-change: transform, filter; }
+    /* Flor */
+    .flower{
+      position:absolute; width:var(--size, 100px); height:var(--size, 100px);
+      transform-origin:center; will-change: transform, filter; --open:0;
+    }
     .flower:hover{ filter: drop-shadow(0 0 12px rgba(255,213,79,.6)) }
     .flower svg{ width:100%; height:100%; display:block }
-    .flower .petal{ transform-box: fill-box; transform-origin:50% 60%; transition: transform .45s cubic-bezier(.2,.8,.2,1), filter .35s ease }
-    .flower.bloom .petal{ transform: scale(1.08); filter: drop-shadow(0 0 14px rgba(255,235,120,.5)) }
+    
+    /* Pétalos realistas con apertura controlada por --open (0..1) */
+    .flower .petal{
+      transform-box: fill-box; transform-origin: 50% 72%;
+      transition: transform .6s cubic-bezier(.2,.8,.2,1), filter .35s ease;
+      transform: rotate(var(--a,0deg)) translate(0, var(--budY,-10px)) scale(calc(.62 + var(--open) * .46));
+      filter: drop-shadow(0 2px 2px rgba(0,0,0,.12));
+    }
+    .flower.bloom{ --open:1 }
+    .flower.bloom .petal{
+      transform: rotate(var(--a,0deg)) translate(0, 0) scale(1);
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,.18)) drop-shadow(0 0 10px rgba(255,235,120,.25));
+    }
 
     /* Accesibilidad: reducir movimiento */
     @media (prefers-reduced-motion: reduce){
