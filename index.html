@@ -13,11 +13,15 @@
       --nebula-2: rgba(232, 161, 255, .20);
       --nebula-3: rgba(255, 205, 56, .16);
 
-      --petal-light: #ffeb3b;
-      --petal-mid: #fbc02d;
-      --petal-dark: #f57f17;
-      --center-light: #fff8e1;
-      --center-dark: #fbc02d;
+      /* Paleta floral */
+      --petal-light: #ffef66;  /* brillo */
+      --petal-mid:   #f7c638;  /* cuerpo */
+      --petal-dark:  #e08a00;  /* sombra borde */
+      --petal-line:  rgba(192,105,0,.55);
+      --center-light:#fff8e1;
+      --center-mid:  #ffd76a;
+      --center-dark: #cf8f1a;
+      --sepal:       #2f7d32;
 
       --text:   #f7f3ff;
       --muted:  #c6c3d6;
@@ -26,19 +30,22 @@
       --glow:   0 0 24px rgba(255,220,96,.35), 0 0 64px rgba(180,140,255,.15);
     }
 
-    body{margin:0;font-family:sans-serif;color:var(--text);background:radial-gradient(1200px 800px at 50% 50%,var(--space-2),var(--space-1));overflow:hidden}
-    header{text-align:center;padding:20px;z-index:3;position:relative}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Arial;color:var(--text);background:radial-gradient(1200px 800px at 50% 50%,var(--space-2),var(--space-1));overflow:hidden}
+    header{text-align:center;padding:20px 16px;z-index:3;position:relative}
     .title{margin:0;font-size:clamp(28px,3.6vw,46px);text-shadow:var(--glow)}
     .subtitle{margin:6px 0 0;color:var(--muted)}
-    .panel{z-index:3;position:relative;max-width:1100px;margin:12px auto;padding:12px;border-radius:16px;background:var(--panel);border:1px solid var(--panel-brd);backdrop-filter:blur(6px);display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+
+    .panel{z-index:3;position:relative;max-width:1100px;margin:12px auto;padding:12px;border-radius:16px;background:var(--panel);border:1px solid var(--panel-brd);backdrop-filter:blur(6px);display:flex;gap:12px;flex-wrap:wrap;justify-content:center;align-items:end}
     .panel label{font-size:12px;color:var(--muted)}
     .panel input,.panel select{border:1px solid var(--panel-brd);border-radius:12px;padding:10px;background:rgba(255,255,255,.08);color:var(--text)}
     .panel button{cursor:pointer;border:1px solid var(--panel-brd);background:rgba(255,255,255,.08);color:var(--text);padding:10px 14px;border-radius:999px;font-weight:600}
+
     .scene{position:relative;height:calc(100% - 150px)}
     .stars{position:absolute;inset:0;z-index:0}
     .nebula{position:absolute;inset:-20%;background:radial-gradient(800px 600px at 30% 60%,var(--nebula-1),transparent 60%),radial-gradient(600px 500px at 70% 40%,var(--nebula-2),transparent 60%),radial-gradient(900px 700px at 50% 70%,var(--nebula-3),transparent 70%);filter:blur(2px);opacity:.75;animation:spin 120s linear infinite}
     @keyframes spin{to{transform:rotate(360deg)}}
     .core{position:absolute;top:50%;left:50%;width:18vmin;height:18vmin;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle at 50% 45%,#fff6d6 0%,#ffe79a 40%,rgba(255,214,97,0) 70%);box-shadow:0 0 120px rgba(255,214,97,.35)}
+
     .orbits{position:absolute;inset:0;z-index:2;perspective:900px}
     .orbits-inner{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotateX(16deg) rotateZ(-10deg)}
     .orbit{position:absolute;top:50%;left:50%;transform-style:preserve-3d}
@@ -46,10 +53,22 @@
     @keyframes spin-cw{to{transform:rotate(360deg)}}
     @keyframes spin-ccw{to{transform:rotate(-360deg)}}
 
-    .flower{position:absolute;width:var(--size,100px);height:var(--size,100px);cursor:pointer}
-    .flower svg{width:100%;height:100%;}
-    .flower .petal{transform-origin:50% 60%;transition:transform .5s ease}
-    .flower.bloom .petal{transform:scale(1.15)}
+    /* ======== Flor realista ======== */
+    .flower{position:absolute;width:var(--size,100px);height:var(--size,100px);cursor:pointer;filter: drop-shadow(0 2px 6px rgba(0,0,0,.35))}
+    .flower svg{width:100%;height:100%;display:block}
+
+    /* Estado inicial: capullo (pétalos cerrados) */
+    .flower .petal{transform-box:fill-box;transform-origin:50% 65%;opacity:.0;transform:scale(.15) rotate(var(--rot,0deg));transition:transform .6s cubic-bezier(.2,.8,.2,1), opacity .5s ease;transition-delay:var(--delay,0s)}
+    .flower .inner{filter:brightness(1.05)}
+    .flower .sepal{transform-origin:50% 70%;transform:scale(.2);opacity:.0;transition:transform .5s ease, opacity .4s ease}
+    .flower .center, .flower .seeds{transform:scale(.6);opacity:.0;transition:transform .45s ease, opacity .4s ease .05s}
+
+    /* Flor "abierta" */
+    .flower.bloom .petal{opacity:1;transform:scale(1) rotate(var(--rot,0deg))}
+    .flower.bloom .sepal{opacity:.9;transform:scale(1)}
+    .flower.bloom .center, .flower.bloom .seeds{opacity:1;transform:scale(1)}
+
+    .flower:hover{filter: drop-shadow(0 0 10px rgba(255,235,120,.45)) drop-shadow(0 0 30px rgba(255,235,120,.15))}
 
     footer{position:absolute;bottom:10px;width:100%;text-align:center;color:var(--muted)}
   </style>
@@ -94,41 +113,132 @@
   const btnBloomAll=document.getElementById('bloomAll');
   const scene=document.getElementById('scene');
 
-  function makeStarLayer(layer,n){layer.innerHTML='';for(let i=0;i<n;i++){const s=document.createElement('div');s.style.position='absolute';const size=Math.random()*1.5+0.5;s.style.width=size+'px';s.style.height=size+'px';s.style.borderRadius='50%';s.style.background='white';s.style.left=Math.random()*100+'%';s.style.top=Math.random()*100+'%';layer.appendChild(s);}}
-  function buildStars(){stars.querySelectorAll('.layer').forEach((layer,idx)=>makeStarLayer(layer,100+idx*60));}
+  function makeStarLayer(layer,n){layer.innerHTML='';for(let i=0;i<n;i++){const s=document.createElement('div');s.style.position='absolute';const size=Math.random()*1.5+0.5;s.style.width=size+'px';s.style.height=size+'px';s.style.borderRadius='50%';s.style.background='white';s.style.left=Math.random()*100+'%';s.style.top=Math.random()*100+'%';s.style.opacity=(0.4+Math.random()*0.6).toFixed(2);layer.appendChild(s);}}
+  function buildStars(){stars.querySelectorAll('.layer').forEach((layer,idx)=>makeStarLayer(layer,120+idx*70));}
 
-  scene.addEventListener('pointermove',e=>{const rect=scene.getBoundingClientRect();const cx=rect.width/2,cy=rect.height/2;const dx=(e.clientX-rect.left-cx)/cx;const dy=(e.clientY-rect.top-cy)/cy;orbitsRoot.style.transform=`translate(-50%,-50%) rotateX(${16+dy*6}deg) rotateZ(${-10+dx*6}deg)`});
+  // Parallax para estrellas y inclinación de órbitas
+  scene.addEventListener('pointermove',e=>{const rect=scene.getBoundingClientRect();const cx=rect.width/2,cy=rect.height/2;const dx=(e.clientX-rect.left-cx)/cx;const dy=(e.clientY-rect.top-cy)/cy;stars.querySelectorAll('.layer').forEach(layer=>{const d=parseFloat(layer.dataset.depth||1);layer.style.transform=`translate(${dx*d*-10}px,${dy*d*-10}px)`});orbitsRoot.style.transform=`translate(-50%,-50%) rotateX(${16+dy*6}deg) rotateZ(${-10+dx*6}deg)`});
 
   let gid=0;
+  // Petalo realista (forma corazón/almendra con bezier) — reutilizable
+  function petalPath(){
+    return 'M50 62 C 44 48, 44 28, 50 16 C 56 28, 56 48, 50 62 Z';
+  }
+
   function flowerSVG(id){
-    const petals=Array.from({length:8}).map((_,i)=>`<path class="petal" d="M50 60 C40 30,60 30,50 10 C65 30,35 30,50 60 Z" fill="url(#grad${id})" transform="rotate(${i*45} 50 60)"/>`).join('');
-    return `<svg viewBox="0 0 100 100">
+    const outerCount=10; // pétalos externos
+    const innerCount=6;  // pétalos internos
+
+    // Pétalos externos con sombreado
+    const petalsOuter=Array.from({length:outerCount}).map((_,i)=>{
+      const rot=(360/outerCount)*i;
+      const delay=(i*0.03).toFixed(2)+'s';
+      return `<path class="petal outer" d="${petalPath()}" style="--rot:${rot}deg; --delay:${delay}" fill="url(#p${id})" stroke="var(--petal-line)" stroke-width=".6" transform="rotate(${rot} 50 60)"/>`;
+    }).join('');
+
+    // Pétalos internos un poco más pequeños y luminosos
+    const petalsInner=Array.from({length:innerCount}).map((_,i)=>{
+      const rot=(360/innerCount)*i + 15;
+      const delay=(0.25 + i*0.035).toFixed(2)+'s';
+      return `<path class="petal inner" d="${petalPath()}" style="--rot:${rot}deg; --delay:${delay}" fill="url(#pInner${id})" stroke="var(--petal-line)" stroke-width=".5" transform="translate(0,2) scale(.85) rotate(${rot} 50 60)"/>`;
+    }).join('');
+
+    // Sépalos verdes de base
+    const sepals=Array.from({length:5}).map((_,i)=>{
+      const rot=i*72+10;
+      return `<path class="sepal" d="M50 66 C46 62,44 56,50 50 C56 56,54 62,50 66 Z" fill="${getComputedStyle(document.documentElement).getPropertyValue('--sepal')||'#2f7d32'}" opacity=".95" transform="rotate(${rot} 50 60) translate(0,6) scale(1.05)"/>`;
+    }).join('');
+
+    // Centro con semillas (círculos pequeños)
+    const seeds=Array.from({length:14}).map((_,i)=>{
+      const ang=(Math.PI*2/14)*i; const r=6.2; const x=50+Math.cos(ang)*r; const y=60+Math.sin(ang)*r; const o=(0.55+Math.random()*0.35).toFixed(2);
+      return `<circle class="seeds" cx="${x.toFixed(2)}" cy="${y.toFixed(2)}" r=".9" fill="#8c5a12" opacity="${o}"/>`;
+    }).join('');
+
+    return `<svg viewBox="0 0 100 100" aria-hidden="true">
       <defs>
-        <radialGradient id="grad${id}" cx="50%" cy="50%" r="65%">
-          <stop offset="0%" stop-color="var(--petal-light)"/>
-          <stop offset="50%" stop-color="var(--petal-mid)"/>
+        <radialGradient id="p${id}" cx="50%" cy="30%" r="70%">
+          <stop offset="0%"  stop-color="var(--petal-light)"/>
+          <stop offset="45%" stop-color="var(--petal-mid)"/>
           <stop offset="100%" stop-color="var(--petal-dark)"/>
         </radialGradient>
-        <radialGradient id="center${id}" cx="50%" cy="50%" r="55%">
-          <stop offset="0%" stop-color="var(--center-light)"/>
+        <radialGradient id="pInner${id}" cx="50%" cy="30%" r="70%">
+          <stop offset="0%"  stop-color="#fff9a6"/>
+          <stop offset="55%" stop-color="var(--petal-light)"/>
+          <stop offset="100%" stop-color="var(--petal-mid)"/>
+        </radialGradient>
+        <radialGradient id="c${id}" cx="50%" cy="50%" r="60%">
+          <stop offset="0%"  stop-color="var(--center-light)"/>
+          <stop offset="70%" stop-color="var(--center-mid)"/>
           <stop offset="100%" stop-color="var(--center-dark)"/>
         </radialGradient>
       </defs>
-      ${petals}
-      <circle cx="50" cy="60" r="10" fill="url(#center${id})" />
+      ${sepals}
+      ${petalsOuter}
+      ${petalsInner}
+      <circle class="center" cx="50" cy="60" r="9.8" fill="url(#c${id})" stroke="#c7891a" stroke-width=".4" />
+      ${seeds}
     </svg>`;
   }
-  function createFlower(size=100){const wrap=document.createElement('div');wrap.className='flower';wrap.style.setProperty('--size',size+'px');const id=++gid;wrap.innerHTML=flowerSVG(id);wrap.addEventListener('click',()=>wrap.classList.toggle('bloom'));return wrap;}
 
-  function createOrbit(diameter,speedSec,reverse){const o=document.createElement('div');o.className='orbit';o.style.setProperty('--d',diameter+'px');o.style.width=o.style.height=diameter+'px';o.style.marginLeft=o.style.marginTop=(-diameter/2)+'px';o.style.animation=`${reverse?'spin-ccw':'spin-cw'} ${speedSec}s linear infinite`;return o;}
-  function populateOrbit(o,count){const radius=parseFloat(getComputedStyle(o).getPropertyValue('--d'))/2;for(let i=0;i<count;i++){const angle=(360/count)*i;const f=createFlower(80);f.style.transform=`rotate(${angle}deg) translate(${radius}px) rotate(${-angle}deg)`;o.appendChild(f);}}
-  function buildOrbits(nOrbits,perOrbit){orbitsRoot.innerHTML='';const base=Math.min(scene.clientWidth,scene.clientHeight)*0.75;const step=base/(nOrbits+1);for(let i=1;i<=nOrbits;i++){const d=step*i;const speed=26+i*6;const reverse=i%2===0;const o=createOrbit(d,speed,reverse);orbitsRoot.appendChild(o);populateOrbit(o,perOrbit);}}
+  function createFlower(size=100){
+    const wrap=document.createElement('div');
+    wrap.className='flower';
+    wrap.style.setProperty('--size',size+'px');
+    const id=++gid;
+    wrap.innerHTML=flowerSVG(id);
+    const toggle=()=>wrap.classList.toggle('bloom');
+    wrap.addEventListener('click',toggle);
+    wrap.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();}});
+    return wrap;
+  }
+
+  function createOrbit(diameter,speedSec,reverse){
+    const o=document.createElement('div');
+    o.className='orbit';
+    o.style.setProperty('--d',diameter+'px');
+    o.style.width=o.style.height=diameter+'px';
+    o.style.marginLeft=o.style.marginTop=(-diameter/2)+'px';
+    o.style.animation=`${reverse?'spin-ccw':'spin-cw'} ${speedSec}s linear infinite`;
+    return o;
+  }
+
+  function populateOrbit(o,count){
+    const radius=parseFloat(getComputedStyle(o).getPropertyValue('--d'))/2;
+    for(let i=0;i<count;i++){
+      const angle=(360/count)*i;
+      const f=createFlower( Math.max(72, Math.min(112, radius/3 + Math.random()*24)) );
+      // Orientación para que miren al centro mientras orbitan
+      f.style.transform=`rotate(${angle}deg) translate(${radius}px) rotate(${-angle}deg)`;
+      o.appendChild(f);
+      // Pequeño retraso para que vayan abriendo en cascada al crear
+      requestAnimationFrame(()=> setTimeout(()=> f.classList.add('bloom'), 120 + i*40));
+    }
+  }
+
+  function buildOrbits(nOrbits,perOrbit){
+    orbitsRoot.innerHTML='';
+    const base=Math.min(scene.clientWidth,scene.clientHeight)*0.75;
+    const step=base/(nOrbits+1);
+    for(let i=1;i<=nOrbits;i++){
+      const d=step*i;
+      const speed=26+i*6+Math.random()*6;
+      const reverse=i%2===0;
+      const o=createOrbit(d,speed,reverse);
+      orbitsRoot.appendChild(o);
+      populateOrbit(o,perOrbit);
+    }
+  }
 
   nombre.addEventListener('input',()=>{destinataria.textContent=nombre.value.trim()||'mi amor'});
-  btnRegen.addEventListener('click',()=>{buildOrbits(parseInt(selectOrbits.value,10),parseInt(selectPer.value,10))});
+  document.getElementById('regen').addEventListener('click',()=>{buildOrbits(parseInt(selectOrbits.value,10),parseInt(selectPer.value,10))});
   btnBloomAll.addEventListener('click',()=>{document.querySelectorAll('.flower').forEach(f=>f.classList.add('bloom'))});
 
-  buildStars();buildOrbits(parseInt(selectOrbits.value,10),parseInt(selectPer.value,10));
+  // Recalcular en resize
+  let t; window.addEventListener('resize',()=>{clearTimeout(t); t=setTimeout(()=>buildOrbits(parseInt(selectOrbits.value,10),parseInt(selectPer.value,10)),200)});
+
+  buildStars();
+  buildOrbits(parseInt(selectOrbits.value,10),parseInt(selectPer.value,10));
 })();
 </script>
 </body>
