@@ -1,641 +1,894 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Mi flor amarilla en la galaxia</title>
-<meta name="description" content="Un detalle romántico: una flor amarilla elegante sobre una galaxia animada."/>
-<style>
-  :root{
-    /* Paleta y parámetros */
-    --txt:#F7F7F5;
-    --bg:#05060F;
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mi flor amarilla en la galaxia</title>
+  <link rel="icon"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath fill='%23F5D37A' d='M32 55s-21-12.7-21-27.3S22 7 32 18c10-11 21 .7 21 9.7S32 55 32 55z'/%3E%3C/svg%3E">
+
+  <style>
+    body {
+      opacity: 0;
+      transition: opacity 600ms var(--ease);
+    }
+
+    body.ready {
+      opacity: 1;
+    }
+
+    :root {
+      /* Paleta y parámetros */
+      --txt: #F7F7F5;
+      --bg: #05060F;
+
+      /* Flor */
+      --petal-light: #FFE589;
+      --petal-mid: #F6C549;
+      --petal-deep: #E7B137;
+      --center-1: #FFD76A;
+      --center-2: #DAA520;
+      --center-3: #A87600;
+      --leaf: #3FA263;
+      --leaf-dark: #2C7D4A;
+      --stem: #2F7B32;
+      --halo: #EACB76;
+
+      /* Duraciones/curvas */
+      --fast: 220ms;
+      --med: 480ms;
+      --slow: 900ms;
+      --ease: cubic-bezier(.215, .61, .355, 1);
+
+      /* Layout */
+      --maxw: 980px;
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      height: 100%
+    }
+
+    body {
+      margin: 0;
+      color: var(--txt);
+      background: var(--bg);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans";
+      overflow: hidden;
+      /* el lienzo ocupa todo */
+    }
+
+    /* Fondo galaxia */
+    #sky {
+      position: fixed;
+      inset: 0;
+      z-index: -4;
+      display: block;
+      background: radial-gradient(1200px 800px at 70% 30%, rgba(90, 0, 110, .25), transparent 60%),
+        radial-gradient(900px 600px at 30% 70%, rgba(0, 70, 140, .20), transparent 60%),
+        linear-gradient(180deg, #05060D 0%, #0B0E1F 100%);
+    }
+
+    /* Nebulosas extra (suave, sobre el canvas) */
+    .nebula {
+      position: fixed;
+      inset: -8%;
+      z-index: -3;
+      mix-blend-mode: screen;
+      pointer-events: none;
+      filter: blur(18px) saturate(115%);
+    }
+
+    .nebula.a {
+      background:
+        radial-gradient(45% 35% at 65% 40%, rgba(140, 70, 210, .45), transparent 65%),
+        radial-gradient(38% 30% at 30% 65%, rgba(255, 180, 120, .38), transparent 65%);
+      animation: spinA 160s linear infinite;
+    }
+
+    .nebula.b {
+      background:
+        radial-gradient(42% 32% at 70% 60%, rgba(80, 160, 255, .32), transparent 65%),
+        radial-gradient(34% 28% at 40% 40%, rgba(255, 240, 160, .22), transparent 65%);
+      animation: spinB 220s linear infinite reverse;
+    }
+
+    @keyframes spinA {
+      to {
+        transform: rotate(360deg) scale(1.03)
+      }
+    }
+
+    @keyframes spinB {
+      to {
+        transform: rotate(360deg) scale(1.04)
+      }
+    }
+
+    /* Layout principal */
+    main {
+      position: relative;
+      z-index: 1;
+      min-height: 100dvh;
+      display: grid;
+      place-items: center;
+      padding: 4rem 1rem 5rem;
+      max-width: var(--maxw);
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    /* Título lindo */
+    .page-title {
+      position: fixed;
+      top: 1.25rem;
+      left: 50%;
+      transform: translateX(-50%);
+      margin: 0;
+      padding: .35rem .9rem;
+      font-weight: 700;
+      letter-spacing: .6px;
+      font-size: clamp(1.1rem, 2.4vw, 1.6rem);
+      color: transparent;
+      background: linear-gradient(90deg, #FFE4A8, #FFF2C9, #F5D37A);
+      -webkit-background-clip: text;
+      background-clip: text;
+      text-shadow: 0 0 20px rgba(255, 220, 140, .18);
+      border-radius: 12px;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .ghost-btn {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 2;
+      background: rgba(20, 22, 40, .28);
+      color: var(--txt);
+      border: 1px solid rgba(255, 255, 255, .25);
+      border-radius: 999px;
+      padding: .6rem 1rem;
+      backdrop-filter: blur(6px) saturate(120%);
+      cursor: pointer;
+      transition: transform var(--fast) var(--ease), border-color var(--fast) var(--ease);
+    }
+
+    .ghost-btn:hover {
+      transform: translateY(-1px);
+      border-color: rgba(255, 255, 255, .45);
+    }
+
+    .ghost-btn:focus-visible {
+      outline: 2px solid var(--halo);
+      outline-offset: 3px;
+    }
 
     /* Flor */
-    --petal-light:#FFE589;
-    --petal-mid:#F6C549;
-    --petal-deep:#E7B137;
-    --center-1:#FFD76A;
-    --center-2:#DAA520;
-    --center-3:#A87600;
-    --leaf:#3FA263;
-    --leaf-dark:#2C7D4A;
-    --stem:#2F7B32;
-    --halo:#EACB76;
+    .flower {
+      margin: 0;
+      display: inline-block;
+      filter: drop-shadow(0 12px 26px rgba(0, 0, 0, .45));
+      transform-origin: 50% 100%;
+      animation: sway 7s var(--ease) infinite alternate;
+      will-change: transform, filter;
+    }
 
-    /* Duraciones/curvas */
-    --fast:220ms; --med:480ms; --slow:900ms;
-    --ease: cubic-bezier(.215,.61,.355,1);
+    @keyframes sway {
+      0% {
+        transform: rotate(-1.1deg) translateY(0)
+      }
 
-    /* Layout */
-    --maxw: 980px;
-  }
+      100% {
+        transform: rotate(1.1deg) translateY(-1px)
+      }
+    }
 
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{
-    margin:0; color:var(--txt); background:var(--bg);
-    font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans";
-    overflow:hidden; /* el lienzo ocupa todo */
-  }
+    .flower-svg {
+      display: block
+    }
 
-  /* Fondo galaxia */
-  #sky{
-    position:fixed; inset:0; z-index:-4; display:block;
-    background: radial-gradient(1200px 800px at 70% 30%, rgba(90,0,110,.25), transparent 60%),
-                radial-gradient(900px 600px  at 30% 70%, rgba(0,70,140,.20), transparent 60%),
-                linear-gradient(180deg, #05060D 0%, #0B0E1F 100%);
-  }
-  /* Nebulosas extra (suave, sobre el canvas) */
-  .nebula{
-    position:fixed; inset:-8%; z-index:-3; mix-blend-mode:screen; pointer-events:none;
-    filter: blur(18px) saturate(115%);
-  }
-  .nebula.a{
-    background:
-      radial-gradient(45% 35% at 65% 40%, rgba(140,70,210,.45), transparent 65%),
-      radial-gradient(38% 30% at 30% 65%, rgba(255,180,120,.38), transparent 65%);
-    animation: spinA 160s linear infinite;
-  }
-  .nebula.b{
-    background:
-      radial-gradient(42% 32% at 70% 60%, rgba(80,160,255,.32), transparent 65%),
-      radial-gradient(34% 28% at 40% 40%, rgba(255,240,160,.22), transparent 65%);
-    animation: spinB 220s linear infinite reverse;
-  }
-  @keyframes spinA {to{transform:rotate(360deg) scale(1.03)}}
-  @keyframes spinB {to{transform:rotate(360deg) scale(1.04)}}
+    /* Mensaje */
+    .message {
+      margin-top: 1.2rem;
+      max-width: min(92vw, 720px);
+      background: rgba(10, 12, 22, .55);
+      border: 1px solid rgba(255, 255, 255, .16);
+      border-radius: 16px;
+      padding: 1rem 1.25rem;
+      backdrop-filter: blur(10px) saturate(120%);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, .28);
+      transition: opacity var(--med) var(--ease), transform var(--med) var(--ease);
+    }
 
-  /* Layout principal */
-  main{
-    position:relative; z-index:1;
-    min-height:100dvh; display:grid; place-items:center;
-    padding:4rem 1rem 5rem; max-width:var(--maxw); margin:0 auto; text-align:center;
-  }
+    .message[hidden] {
+      display: block;
+      opacity: 0;
+      transform: translateY(6px) scale(.985);
+      height: 0;
+      padding: 0 1.25rem;
+      border-color: transparent;
+      overflow: hidden
+    }
 
-  /* Título lindo */
-  .page-title{
-    position:fixed; top:1.25rem; left:50%; transform:translateX(-50%);
-    margin:0; padding:.35rem .9rem;
-    font-weight:700; letter-spacing:.6px; font-size:clamp(1.1rem, 2.4vw, 1.6rem);
-    color:transparent;
-    background: linear-gradient(90deg, #FFE4A8, #FFF2C9, #F5D37A);
-    -webkit-background-clip:text; background-clip:text;
-    text-shadow: 0 0 20px rgba(255,220,140,.18);
-    border-radius:12px;
-    pointer-events:none;
-    user-select:none;
-  }
+    .message p {
+      margin: 0;
+      line-height: 1.7;
+      letter-spacing: .15px
+    }
 
-  .ghost-btn{
-    position:fixed; top:1rem; right:1rem; z-index:2;
-    background: rgba(20,22,40,.28); color:var(--txt);
-    border:1px solid rgba(255,255,255,.25); border-radius:999px;
-    padding:.6rem 1rem; backdrop-filter: blur(6px) saturate(120%);
-    cursor:pointer;
-    transition: transform var(--fast) var(--ease), border-color var(--fast) var(--ease);
-  }
-  .ghost-btn:hover{ transform: translateY(-1px); border-color: rgba(255,255,255,.45); }
-  .ghost-btn:focus-visible{ outline:2px solid var(--halo); outline-offset:3px; }
+    /* Accesibilidad útil */
+    .visually-hidden {
+      position: absolute !important;
+      height: 1px;
+      width: 1px;
+      overflow: hidden;
+      clip: rect(1px, 1px, 1px, 1px);
+      white-space: nowrap;
+      border: 0;
+      padding: 0;
+      margin: -1px;
+    }
 
-  /* Flor */
-  .flower{
-    margin:0; display:inline-block;
-    filter: drop-shadow(0 12px 26px rgba(0,0,0,.45));
-    transform-origin:50% 100%;
-    animation: sway 7s var(--ease) infinite alternate;
-    will-change: transform, filter;
-  }
-  @keyframes sway{
-    0%{transform:rotate(-1.1deg) translateY(0)}
-    100%{transform:rotate(1.1deg) translateY(-1px)}
-  }
-  .flower-svg{display:block}
+    /* SVG estilado (reutilizable) */
+    .stem {
+      fill: none;
+      stroke: var(--stem);
+      stroke-width: 6;
+      stroke-linecap: round;
+      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .35));
+    }
 
-  /* Mensaje */
-  .message{
-    margin-top:1.2rem; max-width:min(92vw, 720px);
-    background: rgba(10,12,22,.55);
-    border:1px solid rgba(255,255,255,.16);
-    border-radius:16px; padding:1rem 1.25rem;
-    backdrop-filter: blur(10px) saturate(120%);
-    box-shadow:0 10px 24px rgba(0,0,0,.28);
-    transition: opacity var(--med) var(--ease), transform var(--med) var(--ease);
-  }
-  .message[hidden]{display:block; opacity:0; transform:translateY(6px) scale(.985); height:0; padding:0 1.25rem; border-color:transparent; overflow:hidden}
-  .message p{margin:0; line-height:1.7; letter-spacing:.15px}
+    .leaf {
+      fill: var(--leaf);
+      filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .25));
+    }
 
-  /* Accesibilidad útil */
-  .visually-hidden{
-    position:absolute !important; height:1px; width:1px; overflow:hidden;
-    clip:rect(1px,1px,1px,1px); white-space:nowrap; border:0; padding:0; margin:-1px;
-  }
+    .leaf.veins {
+      fill: none;
+      stroke: rgba(255, 255, 255, .15);
+      stroke-width: 1;
+    }
 
-  /* SVG estilado (reutilizable) */
-  .stem{ fill:none; stroke:var(--stem); stroke-width:6; stroke-linecap:round;
-         filter: drop-shadow(0 1px 2px rgba(0,0,0,.35)); }
-  .leaf{ fill:var(--leaf); filter: drop-shadow(0 2px 2px rgba(0,0,0,.25)); }
-  .leaf.veins{ fill:none; stroke:rgba(255,255,255,.15); stroke-width:1; }
+    .petal {
+      fill: url(#petalGrad);
+      stroke: rgba(160, 120, 40, .28);
+      stroke-width: .7;
+      paint-order: stroke fill;
+      filter: drop-shadow(0 .5px 0 rgba(255, 255, 255, .12)) drop-shadow(0 2px 4px rgba(0, 0, 0, .25));
+      transform-origin: 180px 230px;
+      transition: transform var(--med) var(--ease), filter var(--med) var(--ease);
+    }
 
-  .petal{
-    fill:url(#petalGrad);
-    stroke:rgba(160,120,40,.28); stroke-width:.7; paint-order: stroke fill;
-    filter: drop-shadow(0 .5px 0 rgba(255,255,255,.12)) drop-shadow(0 2px 4px rgba(0,0,0,.25));
-    transform-origin:180px 230px;
-    transition: transform var(--med) var(--ease), filter var(--med) var(--ease);
-  }
-  .petal.front{ filter: drop-shadow(0 0 .6px rgba(255,255,255,.18)) drop-shadow(0 3px 6px rgba(0,0,0,.3)); }
+    .petal.front {
+      filter: drop-shadow(0 0 .6px rgba(255, 255, 255, .18)) drop-shadow(0 3px 6px rgba(0, 0, 0, .3));
+    }
 
-  .center{ filter: drop-shadow(0 0 3px rgba(0,0,0,.25)) drop-shadow(0 0 12px rgba(255,210,90,.18));
-           transition: filter var(--fast) var(--ease); }
-  .halo{ transition: opacity var(--fast) var(--ease); }
+    .center {
+      filter: drop-shadow(0 0 3px rgba(0, 0, 0, .25)) drop-shadow(0 0 12px rgba(255, 210, 90, .18));
+      transition: filter var(--fast) var(--ease);
+    }
 
-  /* Hover/focus: micro-bloom */
-  .flower:hover .petal, .flower:focus-visible .petal{ transform:scale(1.035); }
-  .flower:hover .center, .flower:focus-visible .center{
-    filter: drop-shadow(0 0 10px rgba(255,220,120,.45)) drop-shadow(0 0 26px rgba(255,220,120,.28));
-  }
-  .flower:hover .halo, .flower:focus-visible .halo{ opacity:.95 }
+    .halo {
+      transition: opacity var(--fast) var(--ease);
+    }
 
-  /* Click: florecer */
-  .flower.bloom .petal{ transform:scale(1.06) }
+    /* Hover/focus: micro-bloom */
+    .flower:hover .petal,
+    .flower:focus-visible .petal {
+      transform: scale(1.035);
+    }
 
-  /* Reduce motion */
-  @media (prefers-reduced-motion: reduce){
-    #sky{background-attachment:initial}
-    .nebula, .flower{animation:none !important}
-  }
+    .flower:hover .center,
+    .flower:focus-visible .center {
+      filter: drop-shadow(0 0 10px rgba(255, 220, 120, .45)) drop-shadow(0 0 26px rgba(255, 220, 120, .28));
+    }
 
-  /* ——— Mejora visual extra ——— */
-.page-title{
-  background-size: 200% 100%;
-  animation: shimmer 12s linear infinite;
-}
-@keyframes shimmer{
-  0%{ background-position: 0% 50% }
-  100%{ background-position: 100% 50% }
-}
+    .flower:hover .halo,
+    .flower:focus-visible .halo {
+      opacity: .95
+    }
 
-/* Viñeta para foco */
-.vignette{
-  position: fixed; inset: 0; z-index: -2; pointer-events: none;
-  box-shadow:
-    inset 0 0 220px rgba(0,0,0,.45),
-    inset 0 0 600px rgba(0,0,0,.35);
-}
+    /* Click: florecer */
+    .flower.bloom .petal {
+      transform: scale(1.06)
+    }
 
-/* Glow del cursor */
-#cursorGlow{
-  position: fixed; z-index: -1; pointer-events: none;
-  width: 220px; height: 220px; border-radius: 50%;
-  background: radial-gradient(circle,
-              rgba(255,240,180,.10) 0%,
-              rgba(255,215,120,.05) 35%,
-              rgba(255,215,120,0) 60%);
-  mix-blend-mode: screen;
-  transform: translate3d(-9999px,-9999px,0);
-  transition: transform 60ms linear, opacity 240ms var(--ease);
-  opacity: .85;
-}
+    /* Reduce motion */
+    @media (prefers-reduced-motion: reduce) {
+      #sky {
+        background-attachment: initial
+      }
 
-/* Chispas doradas */
-.sparkle{
-  position: fixed; width: 4px; height: 4px; border-radius: 50%;
-  background: radial-gradient(circle, #fff, rgba(255,255,255,.2) 60%, transparent 61%);
-  box-shadow: 0 0 8px 2px rgba(255,240,180,.5);
-  pointer-events: none;
-  animation: spark 1.2s ease-out forwards;
-}
-@keyframes spark{
-  0%   { transform: translate(0,0) scale(.8); opacity: 1; }
-  100% { transform: translate(var(--dx), var(--dy)) scale(0.2); opacity: 0; }
-}
+      .nebula,
+      .flower {
+        animation: none !important
+      }
+    }
 
-/* Gotas de rocío (en SVG) */
-.dew circle{
-  fill: url(#dewGrad);
-  filter: drop-shadow(0 0 2px rgba(255,255,255,.6));
-  opacity: .85;
-  transition: transform var(--med) var(--ease), opacity var(--med) var(--ease);
-}
-.flower:hover .dew circle{ opacity: 1; }
-.flower:hover .dew circle:nth-child(odd){
-  transform: translateY(-.8px) translateX(.6px) scale(1.06);
-}
-.flower:hover .dew circle:nth-child(even){
-  transform: translateY(.6px) translateX(-.4px) scale(1.04);
-}
+    /* ——— Mejora visual extra ——— */
+    .page-title {
+      background-size: 200% 100%;
+      animation: shimmer 12s linear infinite;
+    }
 
-/* Coarse (móvil) y reduce motion */
-@media (pointer: coarse){ #cursorGlow{ display:none; } }
-@media (prefers-reduced-motion: reduce){
-  .page-title{ animation: none }
-  #cursorGlow{ display:none }
-}
+    @keyframes shimmer {
+      0% {
+        background-position: 0% 50%
+      }
 
-</style>
+      100% {
+        background-position: 100% 50%
+      }
+    }
+
+    :root {
+      --sat: env(safe-area-inset-top, 0px);
+    }
+
+    .page-title {
+      top: calc(1.25rem + var(--sat));
+    }
+
+    .ghost-btn {
+      top: calc(1rem + var(--sat));
+    }
+
+    /* Viñeta para foco */
+    .vignette {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      pointer-events: none;
+      box-shadow:
+        inset 0 0 220px rgba(0, 0, 0, .45),
+        inset 0 0 600px rgba(0, 0, 0, .35);
+    }
+
+    /* Glow del cursor */
+    #cursorGlow {
+      position: fixed;
+      z-index: -1;
+      pointer-events: none;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle,
+          rgba(255, 240, 180, .10) 0%,
+          rgba(255, 215, 120, .05) 35%,
+          rgba(255, 215, 120, 0) 60%);
+      mix-blend-mode: screen;
+      transform: translate3d(-9999px, -9999px, 0);
+      transition: transform 60ms linear, opacity 240ms var(--ease);
+      opacity: .85;
+    }
+
+    /* Chispas doradas */
+    .sparkle {
+      position: fixed;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #fff, rgba(255, 255, 255, .2) 60%, transparent 61%);
+      box-shadow: 0 0 8px 2px rgba(255, 240, 180, .5);
+      pointer-events: none;
+      animation: spark 1.2s ease-out forwards;
+    }
+
+    @keyframes spark {
+      0% {
+        transform: translate(0, 0) scale(.8);
+        opacity: 1;
+      }
+
+      100% {
+        transform: translate(var(--dx), var(--dy)) scale(0.2);
+        opacity: 0;
+      }
+    }
+
+    /* Gotas de rocío (en SVG) */
+    .dew circle {
+      fill: url(#dewGrad);
+      filter: drop-shadow(0 0 2px rgba(255, 255, 255, .6));
+      opacity: .85;
+      transition: transform var(--med) var(--ease), opacity var(--med) var(--ease);
+    }
+
+    .flower:hover .dew circle {
+      opacity: 1;
+    }
+
+    .flower:hover .dew circle:nth-child(odd) {
+      transform: translateY(-.8px) translateX(.6px) scale(1.06);
+    }
+
+    .flower:hover .dew circle:nth-child(even) {
+      transform: translateY(.6px) translateX(-.4px) scale(1.04);
+    }
+
+    /* Coarse (móvil) y reduce motion */
+    @media (pointer: coarse) {
+      #cursorGlow {
+        display: none;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .page-title {
+        animation: none
+      }
+
+      #cursorGlow {
+        display: none
+      }
+    }
+  </style>
 </head>
+
 <body>
-<canvas id="sky" aria-hidden="true"></canvas>
-<div class="nebula a" aria-hidden="true"></div>
-<div class="nebula b" aria-hidden="true"></div>
+  <canvas id="sky" aria-hidden="true"></canvas>
+  <div class="nebula a" aria-hidden="true"></div>
+  <div class="nebula b" aria-hidden="true"></div>
   <div id="cursorGlow" aria-hidden="true"></div>
-<div id="fx" aria-hidden="true"></div>
-<div class="vignette" aria-hidden="true"></div>
+  <div id="fx" aria-hidden="true"></div>
+  <div class="vignette" aria-hidden="true"></div>
 
 
-<main>
-  <h1 class="page-title">Para Andrea Garcia, de tu esposo.</h1>
+  <main>
+    <h1 class="page-title">Para Andrea Garcia, de tu esposo.</h1>
 
-  <button id="toggleMessage" class="ghost-btn" type="button"
-          aria-controls="loveMessage" aria-expanded="false">Mostrar mensaje</button>
+    <button id="toggleMessage" class="ghost-btn" type="button" aria-controls="loveMessage" aria-expanded="false">Mostrar
+      mensaje</button>
 
-  <!-- FLOR SVG DE ALTA CALIDAD -->
-  <figure class="flower" aria-label="Flor amarilla elegante" role="img" tabindex="0">
-    <svg class="flower-svg" viewBox="0 0 360 520" width="360" height="520" aria-hidden="true">
-      <defs>
-        <!-- Gradiente pétalos -->
-        <radialGradient id="petalGrad" cx="50%" cy="40%" r="70%">
-          <stop offset="0%"   stop-color="var(--petal-light)"/>
-          <stop offset="55%"  stop-color="var(--petal-mid)"/>
-          <stop offset="100%" stop-color="var(--petal-deep)"/>
-        </radialGradient>
+    <!-- FLOR SVG DE ALTA CALIDAD -->
+    <figure class="flower" aria-label="Flor amarilla elegante" role="img" tabindex="0">
+      <svg class="flower-svg" viewBox="0 0 360 520" width="360" height="520" aria-hidden="true">
+        <defs>
+          <!-- Gradiente pétalos -->
+          <radialGradient id="petalGrad" cx="50%" cy="40%" r="70%">
+            <stop offset="0%" stop-color="var(--petal-light)" />
+            <stop offset="55%" stop-color="var(--petal-mid)" />
+            <stop offset="100%" stop-color="var(--petal-deep)" />
+          </radialGradient>
 
-        <!-- Centro -->
-        <radialGradient id="centerGrad" cx="50%" cy="50%" r="60%">
-          <stop offset="0%"   stop-color="var(--center-1)"/>
-          <stop offset="55%"  stop-color="var(--center-2)"/>
-          <stop offset="100%" stop-color="var(--center-3)"/>
-        </radialGradient>
+          <!-- Centro -->
+          <radialGradient id="centerGrad" cx="50%" cy="50%" r="60%">
+            <stop offset="0%" stop-color="var(--center-1)" />
+            <stop offset="55%" stop-color="var(--center-2)" />
+            <stop offset="100%" stop-color="var(--center-3)" />
+          </radialGradient>
 
-        <!-- Halo dorado del centro -->
-        <radialGradient id="haloGrad" cx="50%" cy="50%" r="100%">
-          <stop offset="0%"   stop-color="rgba(255,214,120,0.55)"/>
-          <stop offset="60%"  stop-color="rgba(255,214,120,0.18)"/>
-          <stop offset="100%" stop-color="rgba(255,214,120,0)"/>
-        </radialGradient>
+          <!-- Halo dorado del centro -->
+          <radialGradient id="haloGrad" cx="50%" cy="50%" r="100%">
+            <stop offset="0%" stop-color="rgba(255,214,120,0.55)" />
+            <stop offset="60%" stop-color="rgba(255,214,120,0.18)" />
+            <stop offset="100%" stop-color="rgba(255,214,120,0)" />
+          </radialGradient>
 
-        <!-- Semillas textura -->
-        <pattern id="seeds" patternUnits="userSpaceOnUse" width="6" height="6">
-          <circle cx="2" cy="2" r="0.7" fill="rgba(255,240,200,0.6)"/>
-          <circle cx="4" cy="4" r="0.6" fill="rgba(210,150,60,0.35)"/>
-        </pattern>
+          <!-- Semillas textura -->
+          <pattern id="seeds" patternUnits="userSpaceOnUse" width="6" height="6">
+            <circle cx="2" cy="2" r="0.7" fill="rgba(255,240,200,0.6)" />
+            <circle cx="4" cy="4" r="0.6" fill="rgba(210,150,60,0.35)" />
+          </pattern>
 
-        <!-- Sombras suaves -->
-        <filter id="softShadow" x="-50%" y="-50%" width="200%" height="200%">
-          <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="rgba(0,0,0,0.35)"/>
-        </filter>
+          <!-- Sombras suaves -->
+          <filter id="softShadow" x="-50%" y="-50%" width="200%" height="200%">
+            <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="rgba(0,0,0,0.35)" />
+          </filter>
 
-        <!-- Petalo base (curva orgánica) -->
-        <path id="petalPath" d="M180 228
+          <!-- Petalo base (curva orgánica) -->
+          <path id="petalPath" d="M180 228
            C 150 198, 150 166, 180 156
            C 210 166, 210 198, 180 228 Z" />
-        <!-- Pétalo exterior algo más largo -->
-        <path id="petalPathLong" d="M180 232
+          <!-- Pétalo exterior algo más largo -->
+          <path id="petalPathLong" d="M180 232
            C 146 188, 146 152, 180 140
            C 214 152, 214 188, 180 232 Z" />
           <radialGradient id="dewGrad" cx="35%" cy="35%" r="70%">
-            <stop offset="0%"  stop-color="rgba(255,255,255,.9)"/>
-            <stop offset="40%" stop-color="rgba(255,255,255,.55)"/>
-            <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+            <stop offset="0%" stop-color="rgba(255,255,255,.9)" />
+            <stop offset="40%" stop-color="rgba(255,255,255,.55)" />
+            <stop offset="100%" stop-color="rgba(255,255,255,0)" />
           </radialGradient>
 
-      </defs>
+        </defs>
 
-      <!-- Sombra bajo la flor -->
-      <ellipse cx="180" cy="495" rx="70" ry="14" fill="rgba(0,0,0,.35)" filter="url(#softShadow)"></ellipse>
+        <!-- Sombra bajo la flor -->
+        <ellipse cx="180" cy="495" rx="70" ry="14" fill="rgba(0,0,0,.35)" filter="url(#softShadow)"></ellipse>
 
-      <!-- Tallo -->
-      <path class="stem" d="M180 300 C176 360, 184 420, 180 480"/>
+        <!-- Tallo -->
+        <path class="stem" d="M180 300 C176 360, 184 420, 180 480" />
 
-      <!-- Hojas -->
-      <g filter="url(#softShadow)">
-        <path class="leaf" d="M175 360 C130 345, 110 320, 122 300 C138 278, 160 288, 175 315 Z"/>
-        <path class="leaf veins" d="M162 332 C150 324, 138 318, 128 316"/>
-        <path class="leaf" d="M185 385 C235 370, 255 345, 243 325 C227 305, 205 315, 185 340 Z"/>
-        <path class="leaf veins" d="M198 356 C212 348, 226 342, 236 340"/>
-      </g>
+        <!-- Hojas -->
+        <g filter="url(#softShadow)">
+          <path class="leaf" d="M175 360 C130 345, 110 320, 122 300 C138 278, 160 288, 175 315 Z" />
+          <path class="leaf veins" d="M162 332 C150 324, 138 318, 128 316" />
+          <path class="leaf" d="M185 385 C235 370, 255 345, 243 325 C227 305, 205 315, 185 340 Z" />
+          <path class="leaf veins" d="M198 356 C212 348, 226 342, 236 340" />
+        </g>
 
-      <!-- Halo del centro -->
-      <circle class="halo" cx="180" cy="230" r="46" fill="url(#haloGrad)" opacity=".8"/>
+        <!-- Halo del centro -->
+        <circle class="halo" cx="180" cy="230" r="46" fill="url(#haloGrad)" opacity=".8" />
 
-      <!-- CORONA EXTERIOR (12 pétalos largos) -->
-      <g>
-        <g transform="rotate(0 180 230)"><use href="#petalPathLong" class="petal"/></g>
-        <g transform="rotate(30 180 230)"><use href="#petalPathLong" class="petal"/></g>
-        <g transform="rotate(60 180 230)"><use href="#petalPathLong" class="petal"/></g>
-        <g transform="rotate(90 180 230)"><use href="#petalPathLong" class="petal"/></g>
-        <g transform="rotate(120 180 230)"><use href="#petalPathLong" class="petal"/></g>
-        <g transform="rotate(150 180 230)"><use href="#petalPathLong" class="petal"/></g>
-        <g transform="rotate(180 180 230)"><use href="#petalPathLong" class="petal"/></g>
-        <g transform="rotate(210 180 230)"><use href="#petalPathLong" class="petal"/></g>
-        <g transform="rotate(240 180 230)"><use href="#petalPathLong" class="petal"/></g>
-        <g transform="rotate(270 180 230)"><use href="#petalPathLong" class="petal"/></g>
-        <g transform="rotate(300 180 230)"><use href="#petalPathLong" class="petal"/></g>
-        <g transform="rotate(330 180 230)"><use href="#petalPathLong" class="petal"/></g>
-      </g>
+        <!-- CORONA EXTERIOR (12 pétalos largos) -->
+        <g>
+          <g transform="rotate(0 180 230)">
+            <use href="#petalPathLong" class="petal" />
+          </g>
+          <g transform="rotate(30 180 230)">
+            <use href="#petalPathLong" class="petal" />
+          </g>
+          <g transform="rotate(60 180 230)">
+            <use href="#petalPathLong" class="petal" />
+          </g>
+          <g transform="rotate(90 180 230)">
+            <use href="#petalPathLong" class="petal" />
+          </g>
+          <g transform="rotate(120 180 230)">
+            <use href="#petalPathLong" class="petal" />
+          </g>
+          <g transform="rotate(150 180 230)">
+            <use href="#petalPathLong" class="petal" />
+          </g>
+          <g transform="rotate(180 180 230)">
+            <use href="#petalPathLong" class="petal" />
+          </g>
+          <g transform="rotate(210 180 230)">
+            <use href="#petalPathLong" class="petal" />
+          </g>
+          <g transform="rotate(240 180 230)">
+            <use href="#petalPathLong" class="petal" />
+          </g>
+          <g transform="rotate(270 180 230)">
+            <use href="#petalPathLong" class="petal" />
+          </g>
+          <g transform="rotate(300 180 230)">
+            <use href="#petalPathLong" class="petal" />
+          </g>
+          <g transform="rotate(330 180 230)">
+            <use href="#petalPathLong" class="petal" />
+          </g>
+        </g>
 
-      <!-- CORONA MEDIA (10 pétalos) -->
-      <g>
-        <g transform="rotate(18 180 230)"><use href="#petalPath" class="petal"/></g>
-        <g transform="rotate(54 180 230)"><use href="#petalPath" class="petal"/></g>
-        <g transform="rotate(90 180 230)"><use href="#petalPath" class="petal"/></g>
-        <g transform="rotate(126 180 230)"><use href="#petalPath" class="petal"/></g>
-        <g transform="rotate(162 180 230)"><use href="#petalPath" class="petal"/></g>
-        <g transform="rotate(198 180 230)"><use href="#petalPath" class="petal"/></g>
-        <g transform="rotate(234 180 230)"><use href="#petalPath" class="petal"/></g>
-        <g transform="rotate(270 180 230)"><use href="#petalPath" class="petal"/></g>
-        <g transform="rotate(306 180 230)"><use href="#petalPath" class="petal"/></g>
-        <g transform="rotate(342 180 230)"><use href="#petalPath" class="petal"/></g>
-      </g>
+        <!-- CORONA MEDIA (10 pétalos) -->
+        <g>
+          <g transform="rotate(18 180 230)">
+            <use href="#petalPath" class="petal" />
+          </g>
+          <g transform="rotate(54 180 230)">
+            <use href="#petalPath" class="petal" />
+          </g>
+          <g transform="rotate(90 180 230)">
+            <use href="#petalPath" class="petal" />
+          </g>
+          <g transform="rotate(126 180 230)">
+            <use href="#petalPath" class="petal" />
+          </g>
+          <g transform="rotate(162 180 230)">
+            <use href="#petalPath" class="petal" />
+          </g>
+          <g transform="rotate(198 180 230)">
+            <use href="#petalPath" class="petal" />
+          </g>
+          <g transform="rotate(234 180 230)">
+            <use href="#petalPath" class="petal" />
+          </g>
+          <g transform="rotate(270 180 230)">
+            <use href="#petalPath" class="petal" />
+          </g>
+          <g transform="rotate(306 180 230)">
+            <use href="#petalPath" class="petal" />
+          </g>
+          <g transform="rotate(342 180 230)">
+            <use href="#petalPath" class="petal" />
+          </g>
+        </g>
 
-      <!-- CORONA INTERIOR (8 pétalos más cortos) -->
-      <g>
-        <g transform="rotate(0 180 230) scale(.9 .9) translate(18 23)"><use href="#petalPath" class="petal front"/></g>
-        <g transform="rotate(45 180 230) scale(.9 .9) translate(18 23)"><use href="#petalPath" class="petal front"/></g>
-        <g transform="rotate(90 180 230) scale(.9 .9) translate(18 23)"><use href="#petalPath" class="petal front"/></g>
-        <g transform="rotate(135 180 230) scale(.9 .9) translate(18 23)"><use href="#petalPath" class="petal front"/></g>
-        <g transform="rotate(180 180 230) scale(.9 .9) translate(18 23)"><use href="#petalPath" class="petal front"/></g>
-        <g transform="rotate(225 180 230) scale(.9 .9) translate(18 23)"><use href="#petalPath" class="petal front"/></g>
-        <g transform="rotate(270 180 230) scale(.9 .9) translate(18 23)"><use href="#petalPath" class="petal front"/></g>
-        <g transform="rotate(315 180 230) scale(.9 .9) translate(18 23)"><use href="#petalPath" class="petal front"/></g>
-      </g>
+        <!-- CORONA INTERIOR (8 pétalos más cortos) -->
+        <g>
+          <g transform="rotate(0 180 230) scale(.9 .9) translate(18 23)">
+            <use href="#petalPath" class="petal front" />
+          </g>
+          <g transform="rotate(45 180 230) scale(.9 .9) translate(18 23)">
+            <use href="#petalPath" class="petal front" />
+          </g>
+          <g transform="rotate(90 180 230) scale(.9 .9) translate(18 23)">
+            <use href="#petalPath" class="petal front" />
+          </g>
+          <g transform="rotate(135 180 230) scale(.9 .9) translate(18 23)">
+            <use href="#petalPath" class="petal front" />
+          </g>
+          <g transform="rotate(180 180 230) scale(.9 .9) translate(18 23)">
+            <use href="#petalPath" class="petal front" />
+          </g>
+          <g transform="rotate(225 180 230) scale(.9 .9) translate(18 23)">
+            <use href="#petalPath" class="petal front" />
+          </g>
+          <g transform="rotate(270 180 230) scale(.9 .9) translate(18 23)">
+            <use href="#petalPath" class="petal front" />
+          </g>
+          <g transform="rotate(315 180 230) scale(.9 .9) translate(18 23)">
+            <use href="#petalPath" class="petal front" />
+          </g>
+        </g>
 
-      <!-- Centro -->
-      <circle class="center" cx="180" cy="230" r="24" fill="url(#centerGrad)"/>
-      <circle class="center" cx="180" cy="230" r="19" fill="url(#seeds)"/>
-      <!-- Gotas de rocío sobre pétalos -->
-      <g class="dew">
-        <circle cx="202" cy="210" r="1.6"/>
-        <circle cx="168" cy="200" r="1.2"/>
-        <circle cx="196" cy="188" r="1.4"/>
-        <circle cx="156" cy="216" r="1.3"/>
-        <circle cx="188" cy="244" r="1.5"/>
-        <circle cx="170" cy="246" r="1.1"/>
-      </g>
+        <!-- Centro -->
+        <circle class="center" cx="180" cy="230" r="24" fill="url(#centerGrad)" />
+        <circle class="center" cx="180" cy="230" r="19" fill="url(#seeds)" />
+        <!-- Gotas de rocío sobre pétalos -->
+        <g class="dew">
+          <circle cx="202" cy="210" r="1.6" />
+          <circle cx="168" cy="200" r="1.2" />
+          <circle cx="196" cy="188" r="1.4" />
+          <circle cx="156" cy="216" r="1.3" />
+          <circle cx="188" cy="244" r="1.5" />
+          <circle cx="170" cy="246" r="1.1" />
+        </g>
 
-    </svg>
-    <figcaption class="visually-hidden">Flor amarilla realista, elegante, sobre un fondo de galaxia animada.</figcaption>
-  </figure>
+      </svg>
+      <figcaption class="visually-hidden">Flor amarilla realista, elegante, sobre un fondo de galaxia animada.
+      </figcaption>
+    </figure>
 
-  <!-- Mensaje romántico -->
-  <section id="loveMessage" class="message" hidden>
-    <p id="typewriter"></p>
-  </section>
-</main>
+    <!-- Mensaje romántico -->
+    <section id="loveMessage" class="message" hidden>
+      <p id="typewriter"></p>
+    </section>
+  </main>
 
-<script>
-/* =================== CONFIG =================== */
-const CONFIG = {
-  mensaje: "Mantente fuerte, hermosa, delicada y exclusiva, quiero ser esa persona admirable que tanto anhelas a tu lado, te amo muchísimo mi amor",
-  escribirVelocidadMs: 22,
-  parallax: true,
-  parallaxNear: 0.018,
-  parallaxFar:  0.007,
-  starsNear: 220,
-  starsFar:  160,
-  meteors: true,
-  meteorEveryMs: [4500, 9000] // min, max
-};
-const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  <script>
+    /* =================== CONFIG =================== */
+    const CONFIG = {
+      mensaje:
+        "Mantente fuerte, hermosa, delicada y exclusiva, quiero ser esa persona admirable que tanto anhelas a tu lado, te amo muchísimo mi amor",
+      escribirVelocidadMs: 22,
+      parallax: true,
+      parallaxNear: 0.018,
+      parallaxFar: 0.007,
+      starsNear: 220,
+      starsFar: 160,
+      meteors: true,
+      meteorEveryMs: [4500, 9000] // [min, max] ms
+    };
 
-/* =================== GALAXIA (canvas) =================== */
-const cvs = document.getElementById('sky');
-const ctx = cvs.getContext('2d');
-let DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-let W=0, H=0;
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-function resize(){
-  DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-  W = Math.floor(innerWidth * DPR);
-  H = Math.floor(innerHeight * DPR);
-  cvs.width = W; cvs.height = H;
-  cvs.style.width = innerWidth + 'px';
-  cvs.style.height = innerHeight + 'px';
-}
-resize(); addEventListener('resize', resize);
+    /* ======= Fade-in del body (polish) ======= */
+    window.addEventListener('load', () => document.body.classList.add('ready'));
 
-function rand(a,b){return Math.random()*(b-a)+a}
-function clamp(n,a,b){return Math.max(a,Math.min(b,n))}
+    /* =================== GALAXIA (canvas) =================== */
+    const cvs = document.getElementById('sky');
+    const ctx = cvs.getContext('2d');
+    let DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+    let W = 0, H = 0;
 
-class Star{
-  constructor(layer){
-    this.layer = layer; // near/far
-    this.reset(true);
-  }
-  reset(first=false){
-    this.x = rand(0,W);
-    this.y = rand(0,H);
-    this.r = (this.layer==='near'? rand(0.8,1.8): rand(0.5,1.2)) * DPR;
-    this.baseAlpha = this.layer==='near'? rand(0.5,0.9) : rand(0.35,0.7);
-    this.alpha = this.baseAlpha;
-    this.tw = rand(1.2,2.6) * (this.layer==='near'? 1: 1.2);
-    this.phase = rand(0,Math.PI*2);
-    this.vx = (this.layer==='near'? 0.012: -0.008) * DPR; // deriva lenta
-    this.vy = (this.layer==='near'? -0.006: 0.004) * DPR;
-    if(first){
-      this.x = rand(0,W); this.y = rand(0,H);
+    function resize() {
+      DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+      W = Math.floor(innerWidth * DPR);
+      H = Math.floor(innerHeight * DPR);
+      cvs.width = W; cvs.height = H;
+      cvs.style.width = innerWidth + 'px';
+      cvs.style.height = innerHeight + 'px';
     }
-  }
-  step(t,px=0,py=0){
-    // twinkle
-    this.alpha = this.baseAlpha + Math.sin(t*this.tw + this.phase)*0.15;
-    this.alpha = clamp(this.alpha, 0.15, 1);
+    resize(); addEventListener('resize', resize, { passive: true });
 
-    // drift + parallax
-    this.x += this.vx + px*(this.layer==='near'? CONFIG.parallaxNear: CONFIG.parallaxFar)*DPR*0.8;
-    this.y += this.vy + py*(this.layer==='near'? CONFIG.parallaxNear: CONFIG.parallaxFar)*DPR*0.8;
+    function rand(a, b) { return Math.random() * (b - a) + a }
+    function clamp(n, a, b) { return Math.max(a, Math.min(b, n)) }
 
-    if(this.x < -10 || this.x > W+10 || this.y < -10 || this.y > H+10){
-      this.reset();
-      // reaparece del lado contrario
-      if(this.vx>0) this.x = -5; else if(this.vx<0) this.x = W+5;
-      if(this.vy>0) this.y = -5; else if(this.vy<0) this.y = H+5;
+    class Star {
+      constructor(layer) {
+        this.layer = layer; // 'near' | 'far'
+        this.reset(true);
+      }
+      reset(first = false) {
+        this.x = rand(0, W);
+        this.y = rand(0, H);
+        this.r = (this.layer === 'near' ? rand(0.8, 1.8) : rand(0.5, 1.2)) * DPR;
+        this.baseAlpha = this.layer === 'near' ? rand(0.5, 0.9) : rand(0.35, 0.7);
+        this.alpha = this.baseAlpha;
+        this.tw = rand(1.2, 2.6) * (this.layer === 'near' ? 1 : 1.2);
+        this.phase = rand(0, Math.PI * 2);
+        this.vx = (this.layer === 'near' ? 0.012 : -0.008) * DPR; // deriva lenta
+        this.vy = (this.layer === 'near' ? -0.006 : 0.004) * DPR;
+        if (first) {
+          this.x = rand(0, W); this.y = rand(0, H);
+        }
+      }
+      step(t, px = 0, py = 0) {
+        // twinkle
+        this.alpha = this.baseAlpha + Math.sin(t * this.tw + this.phase) * 0.15;
+        this.alpha = clamp(this.alpha, 0.15, 1);
+
+        // drift + parallax
+        this.x += this.vx + px * (this.layer === 'near' ? CONFIG.parallaxNear : CONFIG.parallaxFar) * DPR * 0.8;
+        this.y += this.vy + py * (this.layer === 'near' ? CONFIG.parallaxNear : CONFIG.parallaxFar) * DPR * 0.8;
+
+        if (this.x < -10 || this.x > W + 10 || this.y < -10 || this.y > H + 10) {
+          this.reset();
+          // reaparece desde el lado opuesto
+          if (this.vx > 0) this.x = -5; else if (this.vx < 0) this.x = W + 5;
+          if (this.vy > 0) this.y = -5; else if (this.vy < 0) this.y = H + 5;
+        }
+      }
+      draw() {
+        ctx.globalAlpha = this.alpha;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fill();
+      }
     }
-  }
-  draw(){
-    ctx.globalAlpha = this.alpha;
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.r, 0, Math.PI*2);
-    ctx.fillStyle = '#FFFFFF';
-    ctx.fill();
-  }
-}
 
-class Meteor{
-  constructor(){
-    this.reset();
-  }
-  reset(){
-    const sideX = rand(-50*DPR, W*0.2);
-    const sideY = rand(-50*DPR, H*0.3);
-    this.x = sideX; this.y = sideY;
-    this.len = rand(120, 210) * DPR;
-    this.life = rand(700, 1200);
-    this.t0 = performance.now();
-  }
-  draw(now){
-    const p = clamp((now - this.t0)/this.life, 0, 1);
-    const x = this.x + this.len*p;
-    const y = this.y + this.len*p;
-    const g = ctx.createLinearGradient(x-20,y-20, x,y);
-    g.addColorStop(0,'rgba(255,255,255,0)');
-    g.addColorStop(1,'rgba(255,255,255,0.9)');
-    ctx.strokeStyle = g;
-    ctx.lineWidth = 2*DPR;
-    ctx.beginPath();
-    ctx.moveTo(x-18, y-18);
-    ctx.lineTo(x, y);
-    ctx.stroke();
-    return p>=1;
-  }
-}
-
-const stars = [];
-for(let i=0;i<CONFIG.starsNear;i++) stars.push(new Star('near'));
-for(let i=0;i<CONFIG.starsFar;i++)  stars.push(new Star('far'));
-
-let mouseX=0, mouseY=0;
-function onMove(e){
-  if(!CONFIG.parallax || prefersReduced) { mouseX=mouseY=0; return; }
-  const w = innerWidth, h = innerHeight;
-  const x = (e.clientX - w/2) / w;
-  const y = (e.clientY - h/2) / h;
-  mouseX = x; mouseY = y;
-}
-addEventListener('mousemove', onMove, {passive:true});
-
-let meteors = [];
-let nextMeteorAt = 0;
-
-function loop(now){
-  if(prefersReduced){
-    // dibuja estático y detiene
-    drawFrame(0,true);
-    return;
-  }
-  drawFrame(now,false);
-  requestAnimationFrame(loop);
-}
-function drawFrame(now, once){
-  ctx.clearRect(0,0,W,H);
-
-  // estrellas
-  for(const s of stars){ s.step(now*0.001, mouseX, mouseY); s.draw(); }
-
-  // meteoros
-  if(CONFIG.meteors){
-    if(now > nextMeteorAt){
-      meteors.push(new Meteor());
-      const [min,max] = CONFIG.meteorEveryMs;
-      nextMeteorAt = now + rand(min,max);
+    class Meteor {
+      constructor() { this.reset(); }
+      reset() {
+        const sideX = rand(-50 * DPR, W * 0.2);
+        const sideY = rand(-50 * DPR, H * 0.3);
+        this.x = sideX; this.y = sideY;
+        this.len = rand(120, 210) * DPR;
+        this.life = rand(700, 1200);
+        this.t0 = performance.now();
+      }
+      draw(now) {
+        const p = clamp((now - this.t0) / this.life, 0, 1);
+        const x = this.x + this.len * p;
+        const y = this.y + this.len * p;
+        const g = ctx.createLinearGradient(x - 20, y - 20, x, y);
+        g.addColorStop(0, 'rgba(255,255,255,0)');
+        g.addColorStop(1, 'rgba(255,255,255,0.9)');
+        ctx.strokeStyle = g;
+        ctx.lineWidth = 2 * DPR;
+        ctx.beginPath();
+        ctx.moveTo(x - 18, y - 18);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+        return p >= 1;
+      }
     }
-    meteors = meteors.filter(m => !m.draw(now));
-  }
 
-  if(once) return; // no animar más si reduce-motion
-}
-requestAnimationFrame(loop);
+    const stars = [];
+    for (let i = 0; i < CONFIG.starsNear; i++) stars.push(new Star('near'));
+    for (let i = 0; i < CONFIG.starsFar; i++)  stars.push(new Star('far'));
 
-/* =================== FLOR: interacción y mensaje =================== */
-const flower = document.querySelector('.flower');
-const toggleBtn = document.getElementById('toggleMessage');
-const message = document.getElementById('loveMessage');
-const typeEl = document.getElementById('typewriter');
+    let mouseX = 0, mouseY = 0;
+    function onMove(e) {
+      if (!CONFIG.parallax || prefersReduced) { mouseX = mouseY = 0; return; }
+      const w = innerWidth, h = innerHeight;
+      const x = (e.clientX - w / 2) / w;
+      const y = (e.clientY - h / 2) / h;
+      mouseX = x; mouseY = y;
+    }
+    addEventListener('mousemove', onMove, { passive: true });
 
-async function typewriter(text, el, speed){
-  el.textContent = "";
-  if(prefersReduced){ el.textContent = text; return; }
-  for(let i=0;i<text.length;i++){
-    el.textContent += text[i];
-    await new Promise(r => setTimeout(r, speed));
-  }
-}
-function toggleMessage(){
-  const isHidden = message.hasAttribute('hidden');
-  if(isHidden){
-    message.removeAttribute('hidden');
-    typewriter(CONFIG.mensaje, typeEl, CONFIG.escribirVelocidadMs);
-  }else{
-    message.setAttribute('hidden','');
-    typeEl.textContent = '';
-  }
-  toggleBtn.setAttribute('aria-expanded', String(isHidden));
-}
-toggleBtn.addEventListener('click', toggleMessage);
+    let meteors = [];
+    let nextMeteorAt = 0;
 
-let bloomTimeout=null;
-function bloom(){
-  flower.classList.add('bloom');
-  clearTimeout(bloomTimeout);
-  bloomTimeout = setTimeout(()=> flower.classList.remove('bloom'), 360);
-  toggleMessage();
-}
-flower.addEventListener('click', bloom);
-flower.addEventListener('keydown', e=>{
-  if(e.key==='Enter' || e.key===' '){ e.preventDefault(); bloom(); }
-});
-  // —— FX: chispas doradas + glow del cursor ——
-const fx   = document.getElementById('fx');
-const glow = document.getElementById('cursorGlow');
+    function drawFrame(now, once) {
+      ctx.clearRect(0, 0, W, H);
 
-function emitSparkles(x, y, count = 18, spread = 60){
-  for(let i=0;i<count;i++){
-    const s = document.createElement('span');
-    s.className = 'sparkle';
-    const ang = Math.random()*Math.PI*2;
-    const rad = Math.random()*spread;
-    const dx = Math.cos(ang)*rad;
-    const dy = Math.sin(ang)*rad;
-    s.style.left = (x-2) + 'px';
-    s.style.top  = (y-2) + 'px';
-    s.style.setProperty('--dx', dx + 'px');
-    s.style.setProperty('--dy', dy + 'px');
-    s.style.animationDuration = (900 + Math.random()*600) + 'ms';
-    fx.appendChild(s);
-    setTimeout(()=> s.remove(), 1600);
-  }
-}
+      // estrellas
+      for (const s of stars) { s.step(now * 0.001, mouseX, mouseY); s.draw(); }
 
-// Glow sigue al cursor
-document.addEventListener('mousemove', (e)=>{
-  if(prefersReduced) return;
-  glow.style.transform = `translate3d(${e.clientX-110}px, ${e.clientY-110}px, 0)`;
-});
+      // meteoros
+      if (CONFIG.meteors) {
+        if (now > nextMeteorAt) {
+          meteors.push(new Meteor());
+          const [min, max] = CONFIG.meteorEveryMs;
+          nextMeteorAt = now + rand(min, max);
+        }
+        meteors = meteors.filter(m => !m.draw(now));
+      }
 
-// ✨ Dispara chispas al abrir mensaje también
-const oldToggle = toggleMessage;
-toggleMessage = function(){
-  const wasHidden = message.hasAttribute('hidden');
-  oldToggle(); // ejecuta lo que ya hacía
-  if(wasHidden && !prefersReduced){
-    // centro del viewport aprox. sobre la flor
-    const rect = flower.getBoundingClientRect();
-    const cx = rect.left + rect.width/2;
-    const cy = rect.top  + rect.height*0.38;
-    emitSparkles(cx, cy, 12, 40);
-  }
-};
+      if (once) return; // no animar más si reduce-motion
+    }
+    function loop(now) {
+      if (prefersReduced) { drawFrame(0, true); return; }
+      drawFrame(now, false);
+      requestAnimationFrame(loop);
+    }
+    requestAnimationFrame(loop);
 
-// 🌼 Mejora bloom(): sustituye tu función bloom por esta
-flower.removeEventListener('click', bloom);
-function bloom(){
-  flower.classList.add('bloom');
-  clearTimeout(bloomTimeout);
-  bloomTimeout = setTimeout(()=> flower.classList.remove('bloom'), 360);
+    /* =================== FX: chispas + glow cursor =================== */
+    const fx = document.getElementById('fx');
+    const glow = document.getElementById('cursorGlow');
 
-  // Centro de la flor para chispas
-  const rect = flower.getBoundingClientRect();
-  const cx = rect.left + rect.width/2;
-  const cy = rect.top  + rect.height*0.38; // altura del capítulo
-  if(!prefersReduced) emitSparkles(cx, cy, 22, 80);
+    function emitSparkles(x, y, count = 18, spread = 60) {
+      const container = fx || document.body;
+      for (let i = 0; i < count; i++) {
+        const s = document.createElement('span');
+        s.className = 'sparkle';
+        const ang = Math.random() * Math.PI * 2;
+        const rad = Math.random() * spread;
+        const dx = Math.cos(ang) * rad;
+        const dy = Math.sin(ang) * rad;
+        s.style.left = (x - 2) + 'px';
+        s.style.top = (y - 2) + 'px';
+        s.style.setProperty('--dx', dx + 'px');
+        s.style.setProperty('--dy', dy + 'px');
+        s.style.animationDuration = (900 + Math.random() * 600) + 'ms';
+        container.appendChild(s);
+        setTimeout(() => s.remove(), 1600);
+      }
+    }
 
-  // Alterna mensaje
-  const wasHidden = message.hasAttribute('hidden');
-  toggleMessage();
-}
-flower.addEventListener('click', bloom);
+    // Glow sigue al cursor
+    document.addEventListener('mousemove', (e) => {
+      if (prefersReduced || !glow) return;
+      glow.style.transform = `translate3d(${e.clientX - 110}px, ${e.clientY - 110}px, 0)`;
+    }, { passive: true });
 
-</script>
+    /* =================== FLOR: interacción y mensaje =================== */
+    const flower = document.querySelector('.flower');
+    const toggleBtn = document.getElementById('toggleMessage');
+    const message = document.getElementById('loveMessage');
+    const typeEl = document.getElementById('typewriter');
+
+    async function typewriter(text, el, speed) {
+      el.textContent = "";
+      if (prefersReduced) { el.textContent = text; return; }
+      for (let i = 0; i < text.length; i++) {
+        el.textContent += text[i];
+        // micro pausa natural cada cierto tiempo
+        const pause = (text[i] === ',' || text[i] === '.') ? speed * 3 : speed;
+        await new Promise(r => setTimeout(r, pause));
+      }
+    }
+
+    // toggleMessage con chispas cuando se abre vía botón
+    function toggleMessage(trigger = 'button') {
+      const isHidden = message.hasAttribute('hidden');
+      if (isHidden) {
+        message.removeAttribute('hidden');
+        typewriter(CONFIG.mensaje, typeEl, CONFIG.escribirVelocidadMs);
+
+        // Emitir chispas si el trigger fue botón (para no duplicar con bloom)
+        if (trigger === 'button' && !prefersReduced) {
+          const rect = flower.getBoundingClientRect();
+          const cx = rect.left + rect.width / 2;
+          const cy = rect.top + rect.height * 0.38;
+          emitSparkles(cx, cy, 12, 40);
+        }
+      } else {
+        message.setAttribute('hidden', '');
+        typeEl.textContent = '';
+      }
+      toggleBtn.setAttribute('aria-expanded', String(isHidden));
+    }
+
+    let bloomTimeout = null;
+    function bloom() {
+      // Animación de florecer
+      flower.classList.add('bloom');
+      clearTimeout(bloomTimeout);
+      bloomTimeout = setTimeout(() => flower.classList.remove('bloom'), 360);
+
+      // Chispas más abundantes desde el centro de la flor
+      if (!prefersReduced) {
+        const rect = flower.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height * 0.38;
+        emitSparkles(cx, cy, 22, 80);
+      }
+
+      // Alternar mensaje, marcando que el trigger fue la flor
+      toggleMessage('flower');
+    }
+
+    /* ===== Enlaces de eventos (una sola vez) ===== */
+    if (toggleBtn) toggleBtn.addEventListener('click', () => toggleMessage('button'));
+    if (flower) {
+      flower.addEventListener('click', bloom);
+      flower.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); bloom(); }
+      });
+    }
+  </script>
+
 </body>
+
 </html>
