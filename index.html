@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Flor amarilla • Galaxia viva</title>
+<title>Mi flor amarilla en la galaxia</title>
 <meta name="description" content="Un detalle romántico: una flor amarilla elegante sobre una galaxia animada."/>
 <style>
   :root{
@@ -15,7 +15,6 @@
     --petal-light:#FFE589;
     --petal-mid:#F6C549;
     --petal-deep:#E7B137;
-    --edge-gold:#EED28A;
     --center-1:#FFD76A;
     --center-2:#DAA520;
     --center-3:#A87600;
@@ -72,6 +71,20 @@
     position:relative; z-index:1;
     min-height:100dvh; display:grid; place-items:center;
     padding:4rem 1rem 5rem; max-width:var(--maxw); margin:0 auto; text-align:center;
+  }
+
+  /* Título lindo */
+  .page-title{
+    position:fixed; top:1.25rem; left:50%; transform:translateX(-50%);
+    margin:0; padding:.35rem .9rem;
+    font-weight:700; letter-spacing:.6px; font-size:clamp(1.1rem, 2.4vw, 1.6rem);
+    color:transparent;
+    background: linear-gradient(90deg, #FFE4A8, #FFF2C9, #F5D37A);
+    -webkit-background-clip:text; background-clip:text;
+    text-shadow: 0 0 20px rgba(255,220,140,.18);
+    border-radius:12px;
+    pointer-events:none;
+    user-select:none;
   }
 
   .ghost-btn{
@@ -160,6 +173,8 @@
 <div class="nebula b" aria-hidden="true"></div>
 
 <main>
+  <h1 class="page-title">Mi flor amarilla en la galaxia</h1>
+
   <button id="toggleMessage" class="ghost-btn" type="button"
           aria-controls="loveMessage" aria-expanded="false">Mostrar mensaje</button>
 
@@ -228,7 +243,6 @@
 
       <!-- CORONA EXTERIOR (12 pétalos largos) -->
       <g>
-        <!-- 12 rotaciones, gradiente + leve variación angular -->
         <g transform="rotate(0 180 230)"><use href="#petalPathLong" class="petal"/></g>
         <g transform="rotate(30 180 230)"><use href="#petalPathLong" class="petal"/></g>
         <g transform="rotate(60 180 230)"><use href="#petalPathLong" class="petal"/></g>
@@ -285,7 +299,7 @@
 <script>
 /* =================== CONFIG =================== */
 const CONFIG = {
-  mensaje: "En el cielo inmenso, tú eres mi flor favorita.",
+  mensaje: "Mantente fuerte, hermosa, delicada, exclusiva, soy tu futuro esposo, esa quiero ser esa persona admirable que tanto anhelas a tu lado, te amo muchísimo mi amor",
   escribirVelocidadMs: 22,
   parallax: true,
   parallaxNear: 0.018,
